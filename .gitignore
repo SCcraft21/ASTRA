@@ -23,7 +23,7 @@ venv/
 .DS_Store
 Thumbs.db
 data/
-checkpoints/
+# checkpoints/
 *.npy
-*.pt
+# *.pt
 venv/
