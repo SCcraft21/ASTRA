@@ -43,7 +43,7 @@ model = GPT(config).to(device)
 model_path = os.path.join(BASE_DIR, "checkpoints/model.pt")
 
 if os.path.exists(model_path):
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.load_state_dict(torch.load(model_path, map_location=device, mmap=True))
 else:
     print(f"Warning: Model not found at {model_path}. Using uninitialized weights.")
 model.eval()
@@ -54,28 +54,30 @@ top_k = 40
 max_new_tokens = 100
 block_size = config.block_size
 
-# ------------------ LOAD RAG MODEL ------------------
-print("Loading RAG model...")
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
-
 # ------------------ LOAD DOCUMENTS ------------------
 documents = []
 corpus_path = os.path.join(BASE_DIR, "data/raw/corpus.txt")
+doc_embeddings = []
+embedder = None
+
 try:
     with open(corpus_path, "r", encoding="utf-8") as f:
         content = f.read()
         documents = [doc.strip() for doc in content.split("\n\n") if len(doc.strip()) > 0]
     print(f"Loaded {len(documents)} documents for RAG.")
+    
+    if documents:
+        print("Loading RAG model...")
+        # Only instantiate the embedder if we actually have documents to embed!
+        embedder = SentenceTransformer("all-MiniLM-L6-v2")
+        doc_embeddings = embedder.encode(documents)
 except FileNotFoundError:
-    print(f"Warning: {corpus_path} not found. RAG will not have documents.")
-
-# Precompute embeddings
-doc_embeddings = embedder.encode(documents) if documents else []
+    print(f"Warning: {corpus_path} not found. RAG will not have documents. Skipping embedder load to save memory.")
 
 
 # ------------------ RETRIEVE FUNCTION ------------------
 def retrieve(query, k=3):
-    if not documents:
+    if not documents or embedder is None:
         return []
     query_embedding = embedder.encode([query])
     similarities = cosine_similarity(query_embedding, doc_embeddings)[0]
