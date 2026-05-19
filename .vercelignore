@@ -1,0 +1,6 @@
+venv/
+.venv/
+training/
+dataset.csv
+__pycache__/
+*.pyc

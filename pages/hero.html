@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ASTRA | Intelligence that Breathes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#0b1326",
+            "surface-container-lowest": "#060e20",
+            "inverse-surface": "#dae2fd",
+            "tertiary-fixed-dim": "#ffb95f",
+            "surface-container": "#171f33",
+            "primary-fixed": "#e1e0ff",
+            "surface-container-high": "#222a3d",
+            "on-primary-container": "#0d0096",
+            "secondary-fixed-dim": "#ddb7ff",
+            "surface": "#0b1326",
+            "surface-bright": "#31394d",
+            "surface-container-highest": "#2d3449",
+            "on-tertiary-fixed": "#2a1700",
+            "tertiary-container": "#ca8100",
+            "on-error": "#690005",
+            "on-secondary": "#490080",
+            "surface-tint": "#c0c1ff",
+            "on-background": "#dae2fd",
+            "primary-container": "#8083ff",
+            "secondary-container": "#6f00be",
+            "inverse-on-surface": "#283044",
+            "on-surface-variant": "#c7c4d7",
+            "on-tertiary-fixed-variant": "#653e00",
+            "error-container": "#93000a",
+            "on-tertiary": "#472a00",
+            "surface-dim": "#0b1326",
+            "on-primary": "#1000a9",
+            "tertiary": "#ffb95f",
+            "error": "#ffb4ab",
+            "on-primary-fixed": "#07006c",
+            "on-primary-fixed-variant": "#2f2ebe",
+            "outline-variant": "#464554",
+            "surface-container-low": "#131b2e",
+            "primary": "#c0c1ff",
+            "inverse-primary": "#494bd6",
+            "on-surface": "#dae2fd",
+            "on-secondary-fixed-variant": "#6900b3",
+            "primary-fixed-dim": "#c0c1ff",
+            "on-secondary-container": "#d6a9ff",
+            "on-tertiary-container": "#3e2400",
+            "surface-variant": "#2d3449",
+            "on-error-container": "#ffdad6",
+            "on-secondary-fixed": "#2c0051",
+            "secondary": "#ddb7ff",
+            "secondary-fixed": "#f0dbff",
+            "tertiary-fixed": "#ffddb8",
+            "outline": "#908fa0"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-desktop": "64px",
+            "margin-mobile": "16px",
+            "gutter": "24px",
+            "unit": "8px",
+            "card-padding": "32px"
+          },
+          "fontFamily": {
+            "user-prompt": ["Inter"],
+            "body-md": ["Inter"],
+            "label-caps": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "body-sm": ["Inter"],
+            "display-lg": ["Inter"],
+            "headline-lg": ["Inter"]
+          },
+          "fontSize": {
+            "user-prompt": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+            "body-md": ["16px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+            "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+            "body-sm": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "300"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #0b1326;
+      color: #dae2fd;
+      overflow-x: hidden;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-card {
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .ambient-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(128, 131, 255, 0.15) 0%, rgba(11, 19, 38, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .logo-pulse {
+      filter: drop-shadow(0 0 30px rgba(192, 193, 255, 0.3));
+    }
+  </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Background Layer -->
+<div class="fixed inset-0 z-0">
+<div class="absolute top-[-10%] right-[-10%] ambient-glow" style="background: radial-gradient(circle, rgba(255, 185, 95, 0.08) 0%, rgba(11, 19, 38, 0) 70%);"></div>
+<div class="absolute bottom-[-20%] left-[-10%] ambient-glow"></div>
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none"></div>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full flex justify-between items-center px-margin-desktop py-4 z-50 backdrop-blur-md">
+<div class="flex items-center gap-8">
+<div class="font-headline-lg text-headline-lg font-light tracking-tighter text-on-surface dark:text-on-surface flex items-center gap-2">
+<img alt="ASTRA" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0uijIFwlf161O_u25PuyvfL-TmxSR5yo14FT8Jm8K7bVCJki6VLYB5RI-6zlCJJFWsb-2TORsXeNOmTW-S88KkFYt0w4TNU1_uSx9zHN3sI9yPqtt05JlYu0R6nkJ2bur374N2NIm4y1TFLualL9AzN4qG29K8tHBG7CrAGIAvL6ggdFCo_SfB93YE3P00qjdXXCdCXxVR32T8TAW3F22xNFmZn3h07AwBvAGqEGmP2JJVodjc1zMi3unGQ"/>
+<span>ASTRA</span>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-opacity uppercase tracking-widest" href="/capabilities">Features</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-opacity uppercase tracking-widest" href="/threshold">Ethics</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-opacity uppercase tracking-widest" href="/developer">Developers</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-opacity uppercase tracking-widest" href="/login">Sign In</a>
+<button class="bg-primary text-on-primary font-label-caps text-label-caps px-6 py-2.5 rounded-full hover:opacity-80 transition-opacity ease-out duration-300">
+        New Session
+      </button>
+</div>
+</header>
+<!-- SideNavBar (Suppressed for Hero) -->
+<!-- Hero Content -->
+<main class="relative z-10 min-h-screen flex flex-col items-center justify-center pt-24 px-margin-mobile md:px-margin-desktop text-center">
+<!-- Hero Image / Logo Focus -->
+<div class="relative mb-12">
+<div class="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 opacity-40"></div>
+<img alt="ASTRA Fluid Mark" class="w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 logo-pulse" src="https://lh3.googleusercontent.com/aida/ADBb0uijIFwlf161O_u25PuyvfL-TmxSR5yo14FT8Jm8K7bVCJki6VLYB5RI-6zlCJJFWsb-2TORsXeNOmTW-S88KkFYt0w4TNU1_uSx9zHN3sI9yPqtt05JlYu0R6nkJ2bur374N2NIm4y1TFLualL9AzN4qG29K8tHBG7CrAGIAvL6ggdFCo_SfB93YE3P00qjdXXCdCXxVR32T8TAW3F22xNFmZn3h07AwBvAGqEGmP2JJVodjc1zMi3unGQ"/>
+</div>
+<!-- Text Cluster -->
+<div class="max-w-4xl w-full">
+<h1 class="font-display-lg text-display-lg md:text-[64px] md:leading-[72px] mb-6 text-on-surface tracking-tight">
+        Intelligence that <span class="text-tertiary">Breathes.</span>
+</h1>
+<p class="font-user-prompt text-user-prompt text-on-surface-variant max-w-2xl mx-auto mb-12">
+        Experience the next evolution of human-AI collaboration. ASTRA translates complex data into organic insights, moving beyond computation into true partnership.
+      </p>
+<!-- CTA Cluster -->
+<div class="flex flex-col md:flex-row items-center justify-center gap-6">
+<button class="w-full md:w-auto bg-tertiary text-on-tertiary font-user-prompt text-user-prompt px-12 py-4 rounded-full shadow-[0_0_30px_rgba(255,185,95,0.3)] hover:scale-[1.05] transition-transform duration-300 ease-out">
+          Get Started
+        </button>
+<button class="w-full md:w-auto glass-card text-on-surface font-user-prompt text-user-prompt px-12 py-4 rounded-full hover:bg-white/5 transition-colors">
+          Learn More
+        </button>
+</div>
+</div>
+<!-- Featured Section / Bento Hint -->
+<div class="mt-32 w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-gutter pb-24">
+<div class="md:col-span-8 glass-card p-card-padding rounded-3xl flex flex-col justify-end min-h-[400px] relative overflow-hidden group">
+<img class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" data-alt="A macro cinematic shot of a fluid, liquid metal sculpture swirling in a dark, atmospheric space. Deep indigo and soft peach light reflections dance across the smooth, organic surface. The lighting is low-key and dramatic, suggesting a highly advanced yet calm technology ecosystem. The composition is focused and minimalistic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNYD9-Kp2eOcEF-CTJaZF4yPyzLE61FtxtJMYh2YxY_khP0aDI0hHpGwKzYdzoCr2OKAvqCwkimzBEw4JBU167yUJsnZqlY4Qb4Lw6azkX7XqfSyOBVes_hht8Mt8pxMFaVQDoqn45M-B5vzniDIVimqfRv0zogkyp3X6oE2Qdlhkz16wDNYseMyms2ge0OstXZ900nQYZSPfbYFuTSInOdqUMRXpgD-H9RZrfXGy6jzhtCEIhmiB51BRr3zrzYeGChrWxo0d7nx0"/>
+<div class="relative z-10">
+<span class="font-label-caps text-label-caps text-tertiary mb-2 block uppercase tracking-widest">The Core</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-4">Contextual Fluidity</h3>
+<p class="text-on-surface-variant max-w-md">Our neural architecture adapts to your unique workflow, learning patterns not just commands.</p>
+</div>
+</div>
+<div class="md:col-span-4 glass-card p-card-padding rounded-3xl flex flex-col justify-between border-primary/20">
+<div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary">psychology</span>
+</div>
+<div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-2">Ethics-First</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm">Built with transparency and human agency at the center of every interaction.</p>
+</div>
+</div>
+<div class="md:col-span-4 glass-card p-card-padding rounded-3xl bg-surface-container-high/40">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-3 h-3 rounded-full bg-tertiary animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-tighter">System Pulse: Optimal</span>
+</div>
+<p class="font-headline-lg text-headline-lg text-on-surface">Integrated across all your tools.</p>
+</div>
+<div class="md:col-span-8 glass-card p-card-padding rounded-3xl flex items-center gap-8 bg-gradient-to-br from-surface-container-high/60 to-background/20">
+<div class="flex-1">
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-4">Developer Sandbox</h3>
+<p class="text-on-surface-variant mb-6">Build custom agents with our intuitive API and fluidic SDK.</p>
+<a class="text-primary font-label-caps text-label-caps flex items-center gap-2 hover:translate-x-2 transition-transform" href="/">
+            EXPLORE THE DOCS <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="hidden lg:block w-48 h-48 bg-surface-container-highest rounded-2xl rotate-3 border border-white/5 shadow-inner">
+<!-- Placeholder for dynamic visual -->
+<div class="w-full h-full flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-on-surface-variant/20">terminal</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<div class="fixed bottom-0 w-full flex justify-center pb-8 px-4 z-50">
+<div class="w-full max-w-2xl bg-surface-container-low/40 backdrop-blur-3xl border border-white/15 ring-1 ring-primary/20 rounded-full shadow-[0_0_40px_rgba(128,131,255,0.2)] flex items-center p-2 focus-within:scale-[1.02] transition-transform duration-300">
+<div class="pl-6 pr-4">
+<span class="material-symbols-outlined text-primary" data-weight="fill">auto_awesome</span>
+</div>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface font-user-prompt text-user-prompt placeholder:text-on-surface-variant/50" placeholder="Ask ASTRA something..." type="text"/>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-label-caps text-label-caps mr-1 hover:opacity-90 transition-opacity">
+        Send
+      </button>
+</div>
+</div>
+<!-- Decorative Light Flare -->
+<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none z-0 overflow-hidden">
+<div class="absolute top-[20%] right-[15%] w-[800px] h-[800px] rounded-full" style="background: radial-gradient(circle, rgba(128, 131, 255, 0.03) 0%, rgba(11, 19, 38, 0) 80%);"></div>
+</div>
+</body></html>

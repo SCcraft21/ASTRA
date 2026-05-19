@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#ca8100",
+                        "primary-container": "#8083ff",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "surface-tint": "#c0c1ff",
+                        "surface": "#0b1326",
+                        "primary": "#c0c1ff",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-background": "#dae2fd",
+                        "inverse-primary": "#494bd6",
+                        "on-secondary-fixed": "#2c0051",
+                        "surface-container": "#171f33",
+                        "on-error": "#690005",
+                        "tertiary-fixed": "#ffddb8",
+                        "outline": "#908fa0",
+                        "on-secondary-fixed-variant": "#6900b3",
+                        "secondary": "#ddb7ff",
+                        "on-tertiary-fixed": "#2a1700",
+                        "inverse-surface": "#dae2fd",
+                        "on-secondary-container": "#d6a9ff",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "surface-bright": "#31394d",
+                        "secondary-fixed": "#f0dbff",
+                        "primary-fixed": "#e1e0ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-surface": "#dae2fd",
+                        "background": "#0b1326",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "secondary-fixed-dim": "#ddb7ff",
+                        "surface-dim": "#0b1326",
+                        "on-secondary": "#490080",
+                        "on-primary-fixed": "#07006c",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "surface-variant": "#2d3449",
+                        "on-tertiary-container": "#3e2400",
+                        "on-tertiary": "#472a00",
+                        "surface-container-low": "#131b2e",
+                        "on-primary-container": "#0d0096",
+                        "surface-container-lowest": "#060e20",
+                        "outline-variant": "#464554",
+                        "surface-container-highest": "#2d3449",
+                        "secondary-container": "#6f00be",
+                        "on-primary": "#1000a9",
+                        "inverse-on-surface": "#283044",
+                        "surface-container-high": "#222a3d",
+                        "tertiary": "#ffb95f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px",
+                        "card-padding": "32px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "user-prompt": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "300"}],
+                        "body-sm": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "user-prompt": ["18px", {"lineHeight": "28px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(23, 31, 51, 0.4);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ambient-glow {
+            filter: blur(120px);
+            z-index: -1;
+        }
+        .layered-blur {
+            position: relative;
+        }
+        .layered-blur::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(192, 193, 255, 0.1), transparent);
+        }
+        .pulse-orb {
+            box-shadow: 0 0 15px rgba(255, 185, 95, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-surface-dim text-on-surface font-body-md overflow-x-hidden selection:bg-primary/30">
+<!-- Background Decoration -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[600px] h-[600px] rounded-full bg-primary/10 ambient-glow"></div>
+<div class="absolute top-[40%] -right-[10%] w-[500px] h-[500px] rounded-full bg-secondary/5 ambient-glow"></div>
+<div class="absolute -bottom-[10%] left-[20%] w-[700px] h-[700px] rounded-full bg-tertiary/10 ambient-glow"></div>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full flex justify-between items-center px-margin-desktop py-4 z-50 backdrop-blur-md bg-transparent transition-opacity ease-out duration-300">
+<div class="flex items-center gap-4">
+<img alt="ASTRA Intelligence Logo" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0uijIFwlf161O_u25PuyvfL-TmxSR5yo14FT8Jm8K7bVCJki6VLYB5RI-6zlCJJFWsb-2TORsXeNOmTW-S88KkFYt0w4TNU1_uSx9zHN3sI9yPqtt05JlYu0R6nkJ2bur374N2NIm4y1TFLualL9AzN4qG29K8tHBG7CrAGIAvL6ggdFCo_SfB93YE3P00qjdXXCdCXxVR32T8TAW3F22xNFmZn3h07AwBvAGqEGmP2JJVodjc1zMi3unGQ"/>
+<span class="font-headline-lg text-headline-lg font-light tracking-tighter text-on-surface">ASTRA</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity font-body-md">Documentation</button>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-label-caps hover:opacity-90 transition-opacity">New Session</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-72 flex flex-col p-6 z-40 bg-surface-container/60 backdrop-blur-xl border-r border-white/10 shadow-2xl transition-all ease-in-out duration-500">
+<div class="mt-20 mb-10 px-2">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-on-primary">person</span>
+</div>
+<div>
+<p class="font-headline-lg text-[16px] leading-tight text-on-surface">Developer Context</p>
+<p class="text-on-surface-variant text-[12px]">ASTRA Intelligence</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 transition-colors rounded-xl font-body-md" href="/">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 transition-colors rounded-xl font-body-md" href="/">
+<span class="material-symbols-outlined">psychology</span>
+<span>Memory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary font-bold border-r-2 border-secondary bg-white/5 rounded-xl font-body-md" href="/">
+<span class="material-symbols-outlined">handyman</span>
+<span>Tools</span>
+</a>
+</nav>
+<div class="mt-auto p-4 glass-card rounded-2xl">
+<p class="text-xs text-on-surface-variant mb-2">Usage Limit</p>
+<div class="w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+<div class="w-2/3 h-full bg-tertiary"></div>
+</div>
+<p class="text-[10px] mt-2 text-on-surface">67% of monthly requests</p>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-72 pt-32 pb-40 px-margin-desktop flex flex-col items-center">
+<div class="w-full max-w-4xl space-y-12">
+<!-- Hero Header Section -->
+<section class="text-center space-y-4">
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight">Developer Access</h1>
+<p class="text-on-surface-variant max-w-xl mx-auto font-body-md">Configure and manage secure API endpoints for ASTRA's contextual intelligence core.</p>
+</section>
+<!-- Key Generator Glass Card -->
+<section class="glass-card p-card-padding rounded-[32px] relative overflow-hidden shadow-[0_0_80px_rgba(128,131,255,0.1)]">
+<div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+<div class="space-y-6">
+<div class="space-y-2">
+<label class="font-label-caps text-on-surface-variant ml-1">KEY IDENTITY</label>
+<input class="w-full bg-surface-container-highest/30 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-primary/50 text-on-surface font-body-md transition-all" placeholder="e.g. Production Mobile App" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-caps text-on-surface-variant ml-1">ACCESS SCOPE</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-highest/30 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-primary/50 text-on-surface font-body-md transition-all">
+<option>Full Access (Read/Write)</option>
+<option>Read-Only Analytics</option>
+<option>Context-Only Extraction</option>
+<option>Administrative Control</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col justify-end space-y-6">
+<div class="p-4 bg-surface-container-low/40 rounded-2xl border border-white/5 space-y-3">
+<div class="flex items-center gap-3">
+<div class="pulse-orb w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-body-sm text-on-surface">System ready for generation</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Keys are encrypted at rest using ASTRA's quantum-resistant protocol.</p>
+</div>
+<button class="w-full py-4 bg-tertiary hover:bg-tertiary-container text-on-tertiary font-user-prompt rounded-2xl transition-all shadow-[0_4px_20px_rgba(255,185,95,0.3)] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">key</span>
+                            Generate Key
+                        </button>
+</div>
+</div>
+<!-- Thinking Glow (Atmospheric micro-interaction representation) -->
+<div class="absolute -right-20 -bottom-20 w-64 h-64 bg-tertiary/20 rounded-full blur-[80px]"></div>
+</section>
+<!-- Active Keys Section -->
+<section class="space-y-8">
+<div class="flex justify-between items-end">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Active Keys</h2>
+<span class="font-label-caps text-on-surface-variant">3 ACTIVE ENDPOINTS</span>
+</div>
+<div class="space-y-1">
+<!-- Key Block 1 -->
+<div class="layered-blur glass-card group flex items-center justify-between p-6 rounded-t-[24px] hover:bg-white/5 transition-all">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">terminal</span>
+</div>
+<div>
+<h3 class="text-body-md font-medium text-on-surface">Main Dashboard V2</h3>
+<div class="flex items-center gap-3 mt-1">
+<code class="text-xs bg-surface-container-highest/50 px-2 py-1 rounded text-primary-fixed-dim">astra_live_••••••••39k1</code>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest">Created May 12, 2024</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete_forever</span>
+</button>
+</div>
+</div>
+<!-- Key Block 2 -->
+<div class="layered-blur glass-card group flex items-center justify-between p-6 hover:bg-white/5 transition-all">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center border border-secondary/20">
+<span class="material-symbols-outlined text-secondary">phone_iphone</span>
+</div>
+<div>
+<h3 class="text-body-md font-medium text-on-surface">iOS Client - Beta</h3>
+<div class="flex items-center gap-3 mt-1">
+<code class="text-xs bg-surface-container-highest/50 px-2 py-1 rounded text-primary-fixed-dim">astra_test_••••••••r92m</code>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest">Created Apr 28, 2024</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete_forever</span>
+</button>
+</div>
+</div>
+<!-- Key Block 3 -->
+<div class="glass-card group flex items-center justify-between p-6 rounded-b-[24px] hover:bg-white/5 transition-all">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center border border-tertiary/20">
+<span class="material-symbols-outlined text-tertiary">data_object</span>
+</div>
+<div>
+<h3 class="text-body-md font-medium text-on-surface">External Analytics Sync</h3>
+<div class="flex items-center gap-3 mt-1">
+<code class="text-xs bg-surface-container-highest/50 px-2 py-1 rounded text-primary-fixed-dim">astra_read_••••••••x21l</code>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest">Created Mar 15, 2024</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete_forever</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Semantic Shell) -->
+<div class="fixed bottom-0 w-full flex justify-center pb-8 px-4 z-50 md:hidden">
+<nav class="flex items-center gap-8 px-8 py-4 bg-surface-container-low/40 backdrop-blur-3xl border border-white/15 ring-1 ring-primary/20 rounded-full shadow-[0_0_40px_rgba(128,131,255,0.2)]">
+<button class="flex flex-col items-center gap-1 bg-primary-container text-on-primary-container rounded-full px-4 py-2">
+<span class="material-symbols-outlined" data-weight="fill">auto_awesome</span>
+<span class="font-user-prompt text-[10px]">Input</span>
+</button>
+</nav>
+</div>
+<!-- Floating Pulse for Atmosphere -->
+<div class="fixed bottom-12 right-12 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 backdrop-blur-md group-hover:scale-110 transition-transform duration-300">
+<div class="pulse-orb w-4 h-4 rounded-full bg-primary animate-pulse"></div>
+</div>
+<span class="text-[10px] font-label-caps text-primary opacity-0 group-hover:opacity-100 transition-opacity">AI ACTIVE</span>
+</div>
+</body></html>

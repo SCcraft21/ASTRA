@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ASTRA - Enter the Core</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "background": "#0b1326",
+                  "surface-container-lowest": "#060e20",
+                  "inverse-surface": "#dae2fd",
+                  "tertiary-fixed-dim": "#ffb95f",
+                  "surface-container": "#171f33",
+                  "primary-fixed": "#e1e0ff",
+                  "surface-container-high": "#222a3d",
+                  "on-primary-container": "#0d0096",
+                  "secondary-fixed-dim": "#ddb7ff",
+                  "surface": "#0b1326",
+                  "surface-bright": "#31394d",
+                  "surface-container-highest": "#2d3449",
+                  "on-tertiary-fixed": "#2a1700",
+                  "tertiary-container": "#ca8100",
+                  "on-error": "#690005",
+                  "on-secondary": "#490080",
+                  "surface-tint": "#c0c1ff",
+                  "on-background": "#dae2fd",
+                  "primary-container": "#8083ff",
+                  "secondary-container": "#6f00be",
+                  "inverse-on-surface": "#283044",
+                  "on-surface-variant": "#c7c4d7",
+                  "on-tertiary-fixed-variant": "#653e00",
+                  "error-container": "#93000a",
+                  "on-tertiary": "#472a00",
+                  "surface-dim": "#0b1326",
+                  "on-primary": "#1000a9",
+                  "tertiary": "#ffb95f",
+                  "error": "#ffb4ab",
+                  "on-primary-fixed": "#07006c",
+                  "on-primary-fixed-variant": "#2f2ebe",
+                  "outline-variant": "#464554",
+                  "surface-container-low": "#131b2e",
+                  "primary": "#c0c1ff",
+                  "inverse-primary": "#494bd6",
+                  "on-surface": "#dae2fd",
+                  "on-secondary-fixed-variant": "#6900b3",
+                  "primary-fixed-dim": "#c0c1ff",
+                  "on-secondary-container": "#d6a9ff",
+                  "on-tertiary-container": "#3e2400",
+                  "surface-variant": "#2d3449",
+                  "on-error-container": "#ffdad6",
+                  "on-secondary-fixed": "#2c0051",
+                  "secondary": "#ddb7ff",
+                  "secondary-fixed": "#f0dbff",
+                  "tertiary-fixed": "#ffddb8",
+                  "outline": "#908fa0"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "margin-desktop": "64px",
+                  "margin-mobile": "16px",
+                  "gutter": "24px",
+                  "unit": "8px",
+                  "card-padding": "32px"
+          },
+          "fontFamily": {
+                  "user-prompt": ["Inter"],
+                  "body-md": ["Inter"],
+                  "label-caps": ["Inter"],
+                  "headline-lg-mobile": ["Inter"],
+                  "body-sm": ["Inter"],
+                  "display-lg": ["Inter"],
+                  "headline-lg": ["Inter"]
+          },
+          "fontSize": {
+                  "user-prompt": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                  "body-md": ["16px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                  "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                  "body-sm": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                  "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "300"}],
+                  "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background: radial-gradient(circle at 50% 50%, #171f33 0%, #0b1326 100%);
+      overflow: hidden;
+    }
+
+    .glass-effect {
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ambient-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(128, 131, 255, 0.15) 0%, rgba(128, 131, 255, 0) 70%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .pulse-orb {
+      position: relative;
+      z-index: 10;
+    }
+
+    @keyframes soft-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; filter: drop-shadow(0 0 20px rgba(128, 131, 255, 0.2)); }
+      50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 40px rgba(128, 131, 255, 0.4)); }
+    }
+
+    .animate-astra-pulse {
+      animation: soft-pulse 4s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="text-on-background font-body-md min-h-screen flex flex-col items-center justify-center p-margin-mobile md:p-margin-desktop">
+<!-- Ambient background elements -->
+<div class="ambient-glow -top-40 -left-40"></div>
+<div class="ambient-glow -bottom-40 -right-40" style="background: radial-gradient(circle, rgba(255, 185, 95, 0.1) 0%, rgba(255, 185, 95, 0) 70%);"></div>
+<!-- Main Content Canvas -->
+<main class="relative z-10 w-full max-w-4xl flex flex-col items-center text-center">
+<!-- Logo Section -->
+<div class="mb-12 md:mb-16">
+<div class="animate-astra-pulse">
+<img alt="ASTRA AI" class="w-32 h-32 md:w-48 md:h-48 object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0uijIFwlf161O_u25PuyvfL-TmxSR5yo14FT8Jm8K7bVCJki6VLYB5RI-6zlCJJFWsb-2TORsXeNOmTW-S88KkFYt0w4TNU1_uSx9zHN3sI9yPqtt05JlYu0R6nkJ2bur374N2NIm4y1TFLualL9AzN4qG29K8tHBG7CrAGIAvL6ggdFCo_SfB93YE3P00qjdXXCdCXxVR32T8TAW3F22xNFmZn3h07AwBvAGqEGmP2JJVodjc1zMi3unGQ"/>
+</div>
+</div>
+<!-- Typography Intro -->
+<div class="space-y-6 mb-16 md:mb-20">
+<h1 class="font-display-lg text-display-lg tracking-tighter text-on-surface">
+        Ready to enter the core?
+      </h1>
+<p class="font-user-prompt text-user-prompt text-on-surface-variant max-w-xl mx-auto opacity-80">
+        Experience intelligence reimagined through a soft-tech lens. Your personal atmospheric companion awaits.
+      </p>
+</div>
+<!-- Action Paths -->
+<div class="w-full max-w-md space-y-4">
+<!-- Primary Action -->
+<button class="group relative w-full py-5 px-8 bg-tertiary-fixed-dim hover:bg-tertiary transition-all duration-300 rounded-full flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,185,95,0.2)] hover:shadow-[0_0_45px_rgba(255,185,95,0.35)]">
+<span class="text-on-tertiary-fixed font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold">
+          Create Your Account
+        </span>
+<span class="material-symbols-outlined text-on-tertiary-fixed text-3xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<!-- Secondary Action -->
+<button class="w-full py-5 px-8 glass-effect hover:bg-white/10 transition-all duration-300 rounded-full">
+<span class="text-on-surface font-body-md text-body-md font-medium tracking-wide">
+          Sign In to Existing
+        </span>
+</button>
+</div>
+</main>
+<!-- Footer / Legal -->
+<footer class="fixed bottom-8 w-full flex justify-center px-margin-mobile z-20">
+<a class="font-label-caps text-label-caps text-outline hover:text-primary transition-colors flex items-center gap-2 group" href="/">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">security</span>
+      Terms of Intelligence
+      <span class="w-0 group-hover:w-4 h-[1px] bg-primary transition-all duration-300 overflow-hidden"></span>
+</a>
+</footer>
+<!-- Visual Flourish: The "Pulse" backdrop -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] opacity-20">
+<svg viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialgradient cx="50%" cy="50%" fx="50%" fy="50%" id="aura" r="50%">
+<stop offset="0%" stop-color="#c0c1ff" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#0b1326" stop-opacity="0"></stop>
+</radialgradient>
+</defs>
+<circle cx="100" cy="100" fill="url(#aura)" r="80"></circle>
+</svg>
+</div>
+</div>
+</body></html>

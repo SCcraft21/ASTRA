@@ -1,0 +1,23 @@
+{
+  "builds": [
+    {
+      "src": "pages/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/capabilities", "dest": "/pages/capabilities.html" },
+    { "src": "/memory", "dest": "/pages/deep_memory.html" },
+    { "src": "/threshold", "dest": "/pages/final_threshold.html" },
+    { "src": "/register", "dest": "/pages/registration.html" },
+    { "src": "/login", "dest": "/pages/login.html" },
+    { "src": "/developer", "dest": "/pages/developer.html" },
+    { "src": "/ambient", "dest": "/pages/ambient.html" },
+    { "src": "/chat", "dest": "/index.html" },
+    { "src": "/", "dest": "/pages/hero.html" }
+  ]
+}

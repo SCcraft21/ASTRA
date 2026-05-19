@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register | ASTRA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(23, 31, 51, 0.4);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ambient-glow-primary {
+            background: radial-gradient(circle, rgba(128, 131, 255, 0.15) 0%, rgba(11, 19, 38, 0) 70%);
+        }
+        .ambient-glow-tertiary {
+            background: radial-gradient(circle, rgba(255, 185, 95, 0.1) 0%, rgba(11, 19, 38, 0) 60%);
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(255, 185, 95, 0.4);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#ddb7ff",
+                      "on-error-container": "#ffdad6",
+                      "surface-container-lowest": "#060e20",
+                      "secondary-fixed": "#f0dbff",
+                      "surface": "#0b1326",
+                      "background": "#0b1326",
+                      "inverse-surface": "#dae2fd",
+                      "secondary-fixed-dim": "#ddb7ff",
+                      "tertiary-fixed": "#ffddb8",
+                      "surface-variant": "#2d3449",
+                      "primary-fixed": "#e1e0ff",
+                      "surface-container-highest": "#2d3449",
+                      "on-surface": "#dae2fd",
+                      "surface-container-high": "#222a3d",
+                      "secondary-container": "#6f00be",
+                      "on-tertiary-fixed": "#2a1700",
+                      "surface-tint": "#c0c1ff",
+                      "on-secondary-fixed": "#2c0051",
+                      "on-primary-fixed": "#07006c",
+                      "surface-dim": "#0b1326",
+                      "surface-bright": "#31394d",
+                      "outline-variant": "#464554",
+                      "on-surface-variant": "#c7c4d7",
+                      "inverse-on-surface": "#283044",
+                      "surface-container-low": "#131b2e",
+                      "on-secondary-fixed-variant": "#6900b3",
+                      "error-container": "#93000a",
+                      "tertiary": "#ffb95f",
+                      "on-tertiary": "#472a00",
+                      "error": "#ffb4ab",
+                      "surface-container": "#171f33",
+                      "primary-container": "#8083ff",
+                      "on-primary": "#1000a9",
+                      "inverse-primary": "#494bd6",
+                      "primary": "#c0c1ff",
+                      "tertiary-container": "#ca8100",
+                      "primary-fixed-dim": "#c0c1ff",
+                      "outline": "#908fa0",
+                      "on-primary-container": "#0d0096",
+                      "on-background": "#dae2fd",
+                      "on-secondary": "#490080",
+                      "on-tertiary-container": "#3e2400",
+                      "on-error": "#690005",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-secondary-container": "#d6a9ff",
+                      "on-primary-fixed-variant": "#2f2ebe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "margin-mobile": "16px",
+                      "card-padding": "32px",
+                      "margin-desktop": "64px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "user-prompt": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "user-prompt": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                      "body-sm": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "300"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden min-h-screen flex flex-col items-center justify-center relative">
+<!-- Ambient Background Layers -->
+<div class="fixed inset-0 z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] ambient-glow-primary rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] ambient-glow-tertiary rounded-full"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_transparent_0%,_#0b1326_80%)]"></div>
+</div>
+<!-- Main Registration Shell -->
+<main class="relative z-10 w-full max-w-lg px-margin-mobile md:px-0">
+<!-- Header Branding -->
+<header class="text-center mb-10">
+<div class="inline-block mb-6 relative">
+<div class="absolute inset-0 blur-xl opacity-30 bg-primary rounded-full"></div>
+<img alt="ASTRA" class="relative w-16 h-16 object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0uijIFwlf161O_u25PuyvfL-TmxSR5yo14FT8Jm8K7bVCJki6VLYB5RI-6zlCJJFWsb-2TORsXeNOmTW-S88KkFYt0w4TNU1_uSx9zHN3sI9yPqtt05JlYu0R6nkJ2bur374N2NIm4y1TFLualL9AzN4qG29K8tHBG7CrAGIAvL6ggdFCo_SfB93YE3P00qjdXXCdCXxVR32T8TAW3F22xNFmZn3h07AwBvAGqEGmP2JJVodjc1zMi3unGQ"/>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2 tracking-tight">Begin your journey</h1>
+<p class="font-body-md text-on-surface-variant opacity-80">Experience fluid intelligence with ASTRA.</p>
+</header>
+<!-- Registration Card -->
+<section class="glass-panel rounded-3xl p-8 md:p-10 shadow-2xl">
+<form class="space-y-6">
+<!-- Name Field -->
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant block ml-1">Full Name</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-50 group-focus-within:text-primary transition-colors">person</span>
+<input class="w-full bg-surface-container-highest/30 border border-white/5 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 focus:outline-none transition-all placeholder:text-on-surface-variant/40 text-on-surface" placeholder="Enter your name" type="text"/>
+</div>
+</div>
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant block ml-1">Email</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-50 group-focus-within:text-primary transition-colors">mail</span>
+<input class="w-full bg-surface-container-highest/30 border border-white/5 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 focus:outline-none transition-all placeholder:text-on-surface-variant/40 text-on-surface" placeholder="email@astra.ai" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant block ml-1">Password</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-50 group-focus-within:text-primary transition-colors">lock</span>
+<input class="w-full bg-surface-container-highest/30 border border-white/5 rounded-2xl py-4 pl-12 pr-12 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 focus:outline-none transition-all placeholder:text-on-surface-variant/40 text-on-surface" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Primary Action -->
+<div class="pt-4">
+<button class="w-full bg-tertiary text-on-tertiary font-user-prompt text-user-prompt py-4 rounded-2xl font-semibold btn-glow transition-all hover:scale-[1.01] active:scale-[0.98] relative overflow-hidden" type="submit">
+<span class="relative z-10">Create Account</span>
+</button>
+</div>
+</form>
+<!-- Divider -->
+<div class="flex items-center my-8">
+<div class="flex-grow h-px bg-white/10"></div>
+<span class="px-4 font-label-caps text-label-caps text-on-surface-variant opacity-50">or continue with</span>
+<div class="flex-grow h-px bg-white/10"></div>
+</div>
+<!-- Social Sign Up -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 bg-surface-container-highest/20 border border-white/10 rounded-2xl py-3 hover:bg-white/5 transition-colors group">
+<img alt="Google" class="w-5 h-5 group-hover:scale-110 transition-transform" data-alt="The official multi-colored Google 'G' icon rendered as a clean vector graphic on a transparent background, used for social login authentication." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuZRcBBM1-8v8nR4pffoMZOzubyjA1aJxObl9_EHo42THAP1VsGfnXOYdjnxy64VMGOZpq4b_qw6A5sYfoAb_I45aTi7yeee34UVrjX5og_6opajiru5y_-yC7hIh4Uc5QsqK6-uBHvDu5WO5CaN0eH3DquJKgtwdCnGnFjclh_mECqO44nAWClhUtOW8Gvq1q4eqYckAvh9USXV_W-EkF0aifGeoz4EGUQwX5EihHhTQ8gAIBeq0rYzqI2aPUSNHymKPlpG4uZX8"/>
+<span class="font-body-md text-on-surface-variant group-hover:text-on-surface">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 bg-surface-container-highest/20 border border-white/10 rounded-2xl py-3 hover:bg-white/5 transition-colors group">
+<svg class="w-5 h-5 fill-on-surface-variant group-hover:fill-on-surface transition-colors" viewbox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg>
+<span class="font-body-md text-on-surface-variant group-hover:text-on-surface">GitHub</span>
+</button>
+</div>
+</section>
+<!-- Footer Link -->
+<footer class="mt-8 text-center">
+<p class="font-body-sm text-on-surface-variant">
+                Already have an account? 
+                <a class="text-primary hover:text-secondary font-medium transition-colors ml-1 underline underline-offset-4 decoration-primary/30" href="/login">Sign in</a>
+</p>
+</footer>
+<!-- Legal Disclaimer -->
+<p class="mt-12 text-center text-[10px] uppercase tracking-widest text-on-surface-variant opacity-30 px-margin-mobile">
+            By creating an account, you agree to ASTRA's Terms of Core and Neural Processing Protocols.
+        </p>
+</main>
+<!-- Animated Pulse Element -->
+<div class="fixed bottom-12 right-12 opacity-40 mix-blend-screen pointer-events-none">
+<div class="w-4 h-4 bg-primary rounded-full blur-[2px] animate-pulse"></div>
+<div class="absolute inset-0 w-4 h-4 bg-primary rounded-full blur-xl scale-[3]"></div>
+</div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = e.target.querySelector('input[type="text"]').value;
+        const email = e.target.querySelector('input[type="email"]').value;
+        const password = e.target.querySelector('input[type="password"]').value;
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+
+        try {
+            btn.innerHTML = '<span class="relative z-10">Creating...</span>';
+            btn.disabled = true;
+
+            // Use production URL if not on localhost
+            const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://localhost:8000' 
+                : 'https://your-backend-app.onrender.com'; // TODO: Replace with your actual Render URL
+
+            const response = await fetch(`${baseUrl}/api/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Account created successfully! Please login.');
+                window.location.href = '/login';
+            } else {
+                alert(data.detail || 'Registration failed.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Failed to connect to the server.');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    });
+</script>
+
+</body></html>
