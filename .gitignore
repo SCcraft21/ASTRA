@@ -4,10 +4,12 @@ data/
 *.npy
 *.csv
 *.txt
+!requirements.txt
+!tokenizer/merges.txt
 
 # ------------------ MODEL ------------------
-checkpoints/
-*.pt
+# checkpoints/
+# *.pt
 
 # ------------------ PYTHON ------------------
 __pycache__/
