@@ -118,6 +118,44 @@ def generate(tokens):
 # ------------------ DATABASE ------------------
 from api.database import init_db, create_user, verify_user
 
+# ------------------ FIREBASE ADMIN SUPPORT ------------------
+firebase_admin_available = False
+try:
+    import firebase_admin
+    from firebase_admin import auth as admin_auth, credentials
+    
+    # Initialize Firebase Admin if credentials file is specified in environment or default credentials exist
+    cred_path = os.environ.get("FIREBASE_CREDENTIALS")
+    if cred_path and os.path.exists(cred_path):
+        cred = credentials.Certificate(cred_path)
+        firebase_admin.initialize_app(cred)
+        firebase_admin_available = True
+        print("✅ Firebase Admin initialized with custom credentials")
+    else:
+        # Try initializing with default credentials
+        try:
+            firebase_admin.initialize_app()
+            firebase_admin_available = True
+            print("✅ Firebase Admin initialized with default credentials")
+        except Exception:
+            print("⚠️ Firebase Admin not initialized (missing credentials). Optional Firebase validation will fallback.")
+except ImportError:
+    print("ℹ️ firebase-admin library not installed. Skipping Firebase Admin setup.")
+
+def verify_firebase_token(id_token: str):
+    """
+    Optional helper to verify Firebase ID tokens on the backend.
+    Returns decoded token dictionary if successful, or None.
+    """
+    if not firebase_admin_available:
+        return None
+    try:
+        decoded_token = admin_auth.verify_id_token(id_token)
+        return decoded_token
+    except Exception as e:
+        print(f"Error verifying Firebase ID token: {e}")
+        return None
+
 # ------------------ FASTAPI APP ------------------
 app = FastAPI(title="ASTRA API")
 

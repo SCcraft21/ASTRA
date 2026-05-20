@@ -208,7 +208,29 @@
 <div class="absolute inset-0 w-4 h-4 bg-primary rounded-full blur-xl scale-[3]"></div>
 </div>
 
-<script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Standard Firebase configuration for the prototype (replace with real configs)
+    const firebaseConfig = {
+        apiKey: "AIzaSyFakeKey-ForPrototypeASTRAConfig",
+        authDomain: "astra-intelligent-canvas.firebaseapp.com",
+        projectId: "astra-intelligent-canvas",
+        storageBucket: "astra-intelligent-canvas.appspot.com",
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:abcdef123456"
+    };
+
+    let auth = null;
+    try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        console.log("Firebase initialized successfully");
+    } catch (e) {
+        console.warn("Firebase failed to initialize:", e);
+    }
+
     document.querySelector('form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -222,24 +244,45 @@
             btn.innerHTML = '<span class="relative z-10">Creating...</span>';
             btn.disabled = true;
 
-            // Use production URL if not on localhost
-            const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                ? 'http://localhost:8000' 
-                : 'https://your-backend-app.onrender.com'; // TODO: Replace with your actual Render URL
+            let firebaseSuccess = false;
+            // Try Firebase Authentication Sign-Up first
+            if (auth && !firebaseConfig.apiKey.includes("FakeKey")) {
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    
+                    // Set the user's Display Name
+                    await updateProfile(user, { displayName: name });
+                    
+                    console.log("Firebase signup successful:", user.uid);
+                    alert('Account created successfully via Firebase! Please login.');
+                    firebaseSuccess = true;
+                    window.location.href = '/login';
+                } catch (firebaseErr) {
+                    console.warn("Firebase registration failed, falling back to SQLite API...", firebaseErr.message);
+                }
+            }
 
-            const response = await fetch(`${baseUrl}/api/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password })
-            });
+            if (!firebaseSuccess) {
+                // Fallback to local SQLite API backend
+                const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'http://localhost:8000' 
+                    : 'https://your-backend-app.onrender.com';
 
-            const data = await response.json();
+                const response = await fetch(`${baseUrl}/api/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
 
-            if (response.ok) {
-                alert('Account created successfully! Please login.');
-                window.location.href = '/login';
-            } else {
-                alert(data.detail || 'Registration failed.');
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Account created successfully! Please login.');
+                    window.location.href = '/login';
+                } else {
+                    alert(data.detail || 'Registration failed.');
+                }
             }
         } catch (err) {
             console.error(err);

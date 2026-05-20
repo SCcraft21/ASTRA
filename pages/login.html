@@ -209,7 +209,29 @@
 <div class="h-px w-full bg-gradient-to-r from-transparent via-secondary/30 to-transparent blur-sm"></div>
 </div>
 
-<script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Standard Firebase configuration for the prototype (replace with real configs)
+    const firebaseConfig = {
+        apiKey: "AIzaSyFakeKey-ForPrototypeASTRAConfig",
+        authDomain: "astra-intelligent-canvas.firebaseapp.com",
+        projectId: "astra-intelligent-canvas",
+        storageBucket: "astra-intelligent-canvas.appspot.com",
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:abcdef123456"
+    };
+
+    let auth = null;
+    try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        console.log("Firebase initialized successfully");
+    } catch (e) {
+        console.warn("Firebase failed to initialize:", e);
+    }
+
     document.querySelector('form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -222,25 +244,45 @@
             btn.innerHTML = 'Signing In...';
             btn.disabled = true;
 
-            // Use production URL if not on localhost
-            const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                ? 'http://localhost:8000' 
-                : 'https://your-backend-app.onrender.com'; // TODO: Replace with your actual Render URL
+            let firebaseSuccess = false;
+            // Try Firebase Authentication first if a real key is provided
+            if (auth && !firebaseConfig.apiKey.includes("FakeKey")) {
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    console.log("Firebase login successful:", user.uid);
+                    localStorage.setItem('user', JSON.stringify({
+                        id: user.uid,
+                        name: user.displayName || user.email.split('@')[0],
+                        email: user.email
+                    }));
+                    firebaseSuccess = true;
+                    window.location.href = '/chat';
+                } catch (firebaseErr) {
+                    console.warn("Firebase Auth failed, falling back to SQLite API...", firebaseErr.message);
+                }
+            }
 
-            const response = await fetch(`${baseUrl}/api/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+            if (!firebaseSuccess) {
+                // Fallback to local SQLite API backend
+                const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'http://localhost:8000' 
+                    : 'https://your-backend-app.onrender.com';
 
-            const data = await response.json();
+                const response = await fetch(`${baseUrl}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
 
-            if (response.ok) {
-                // Save user info and redirect to chat
-                localStorage.setItem('user', JSON.stringify(data.user));
-                window.location.href = '/chat';
-            } else {
-                alert(data.detail || 'Login failed.');
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = '/chat';
+                } else {
+                    alert(data.detail || 'Login failed.');
+                }
             }
         } catch (err) {
             console.error(err);
