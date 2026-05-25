@@ -25,6 +25,10 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 supabase_client = None
 
 if SUPABASE_URL and SUPABASE_KEY and "your-project-id" not in SUPABASE_URL:
+    # Auto-clean trailing slashes and '/rest/v1' path if present
+    SUPABASE_URL = SUPABASE_URL.strip().rstrip('/')
+    if SUPABASE_URL.endswith('/rest/v1'):
+        SUPABASE_URL = SUPABASE_URL[:-8].rstrip('/')
     try:
         from supabase import create_client
         supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
