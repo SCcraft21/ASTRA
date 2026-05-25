@@ -7,5 +7,6 @@ sentence-transformers
 scikit-learn
 numpy
 pydantic
+supabase
 # firebase-admin # Optional: Uncomment to enable backend Firebase verification
 

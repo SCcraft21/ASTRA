@@ -3,12 +3,8 @@ import torch.nn.functional as F
 from tokenizers import ByteLevelBPETokenizer
 from model.gpt import GPT
 from model.config import GPTConfig
-
-# pyrefly: ignore [missing-import]
 from sentence_transformers import SentenceTransformer
-# pyrefly: ignore [missing-import]
 from sklearn.metrics.pairwise import cosine_similarity
-# pyrefly: ignore [missing-import]
 import numpy as np
 
 # ------------------ DEVICE ------------------
