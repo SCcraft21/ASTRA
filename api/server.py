@@ -243,6 +243,43 @@ def generate_response(request: GenerateRequest):
 
     return GenerateResponse(response=response.strip())
 
+# HTML Page Routes (matching vercel.json routing for perfect local development)
+@app.get("/")
+def read_hero():
+    return FileResponse(os.path.join(BASE_DIR, "pages", "hero.html"))
+
+@app.get("/chat")
+def read_chat():
+    return FileResponse(os.path.join(BASE_DIR, "index.html"))
+
+@app.get("/capabilities")
+def read_capabilities():
+    return FileResponse(os.path.join(BASE_DIR, "pages", "capabilities.html"))
+
+@app.get("/memory")
+def read_memory():
+    return FileResponse(os.path.join(BASE_DIR, "pages", "deep_memory.html"))
+
+@app.get("/threshold")
+def read_threshold():
+    return FileResponse(os.path.join(BASE_DIR, "pages", "final_threshold.html"))
+
+@app.get("/register")
+def read_register():
+    return FileResponse(os.path.join(BASE_DIR, "pages", "registration.html"))
+
+@app.get("/login")
+def read_login():
+    return FileResponse(os.path.join(BASE_DIR, "pages", "login.html"))
+
+@app.get("/developer")
+def read_developer():
+    return FileResponse(os.path.join(BASE_DIR, "pages", "developer.html"))
+
+@app.get("/ambient")
+def read_ambient():
+    return FileResponse(os.path.join(BASE_DIR, "pages", "ambient.html"))
+
 # Serve static files for local development
 from fastapi.staticfiles import StaticFiles
 app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="static")
