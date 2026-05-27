@@ -194,7 +194,7 @@
 <footer class="mt-8 text-center">
 <p class="font-body-sm text-on-surface-variant">
                 Already have an account? 
-                <a class="text-primary hover:text-secondary font-medium transition-colors ml-1 underline underline-offset-4 decoration-primary/30" href="/login">Sign in</a>
+                <a class="text-primary hover:text-secondary font-medium transition-colors ml-1 underline underline-offset-4 decoration-primary/30" href="#">Sign in</a>
 </p>
 </footer>
 <!-- Legal Disclaimer -->
@@ -207,48 +207,4 @@
 <div class="w-4 h-4 bg-primary rounded-full blur-[2px] animate-pulse"></div>
 <div class="absolute inset-0 w-4 h-4 bg-primary rounded-full blur-xl scale-[3]"></div>
 </div>
-
-<script>
-    document.querySelector('form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const name = e.target.querySelector('input[type="text"]').value;
-        const email = e.target.querySelector('input[type="email"]').value;
-        const password = e.target.querySelector('input[type="password"]').value;
-        const btn = e.target.querySelector('button[type="submit"]');
-        const originalText = btn.innerHTML;
-
-        try {
-            btn.innerHTML = '<span class="relative z-10">Creating...</span>';
-            btn.disabled = true;
-
-            // Direct SQLite / Supabase API backend
-            const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                ? 'http://localhost:8000' 
-                : 'https://your-backend-app.onrender.com';
-
-            const response = await fetch(`${baseUrl}/api/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert('Account created successfully! Please login.');
-                window.location.href = '/login';
-            } else {
-                alert(data.detail || 'Registration failed.');
-            }
-        } catch (err) {
-            console.error(err);
-            alert('Failed to connect to the server.');
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    });
-</script>
-
 </body></html>

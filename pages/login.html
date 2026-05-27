@@ -154,7 +154,7 @@
 <div class="space-y-2">
 <div class="flex justify-between items-center px-1">
 <label class="font-label-caps text-label-caps text-on-surface-variant" for="password">Password</label>
-<a class="font-label-caps text-label-caps text-primary hover:text-primary-container transition-colors" href="/">Forgot?</a>
+<a class="font-label-caps text-label-caps text-primary hover:text-primary-container transition-colors" href="#">Forgot?</a>
 </div>
 <div class="relative group">
 <input class="w-full bg-surface-container-low/50 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all text-body-md font-body-md placeholder-on-surface-variant/40" id="password" placeholder="••••••••" type="password"/>
@@ -187,7 +187,7 @@
 <div class="text-center">
 <p class="font-body-sm text-body-sm text-on-surface-variant">
                     New to the intelligence? 
-                    <a class="text-primary hover:text-primary-container font-medium ml-1 transition-colors" href="/register">Create an account</a>
+                    <a class="text-primary hover:text-primary-container font-medium ml-1 transition-colors" href="#">Create an account</a>
 </p>
 </div>
 </div>
@@ -208,47 +208,4 @@
 <div class="h-px w-full bg-gradient-to-r from-transparent via-primary/50 to-transparent blur-sm"></div>
 <div class="h-px w-full bg-gradient-to-r from-transparent via-secondary/30 to-transparent blur-sm"></div>
 </div>
-
-<script>
-    document.querySelector('form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const btn = e.target.querySelector('button[type="submit"]');
-        const originalText = btn.innerHTML;
-
-        try {
-            btn.innerHTML = 'Signing In...';
-            btn.disabled = true;
-
-            // Direct SQLite / Supabase API backend
-            const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                ? 'http://localhost:8000' 
-                : 'https://your-backend-app.onrender.com';
-
-            const response = await fetch(`${baseUrl}/api/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                localStorage.setItem('user', JSON.stringify(data.user));
-                window.location.href = '/chat';
-            } else {
-                alert(data.detail || 'Login failed.');
-            }
-        } catch (err) {
-            console.error(err);
-            alert('Failed to connect to the server.');
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    });
-</script>
-
 </body></html>

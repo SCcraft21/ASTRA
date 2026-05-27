@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ASTRA | Memory Repository</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b1326;
+            color: #dae2fd;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(23, 31, 51, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ambient-glow {
+            position: absolute;
+            filter: blur(120px);
+            z-index: -1;
+            border-radius: 50%;
+        }
+        .memory-pulse {
+            box-shadow: 0 0 20px rgba(192, 193, 255, 0.3);
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-error": "#690005",
+                    "surface-bright": "#31394d",
+                    "secondary-fixed": "#f0dbff",
+                    "on-surface-variant": "#c7c4d7",
+                    "surface-tint": "#c0c1ff",
+                    "surface-dim": "#0b1326",
+                    "primary-fixed": "#e1e0ff",
+                    "on-secondary-container": "#d6a9ff",
+                    "on-tertiary": "#472a00",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#131b2e",
+                    "inverse-surface": "#dae2fd",
+                    "on-primary-fixed": "#07006c",
+                    "on-background": "#dae2fd",
+                    "outline-variant": "#464554",
+                    "primary": "#c0c1ff",
+                    "on-secondary": "#490080",
+                    "on-secondary-fixed-variant": "#6900b3",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "surface": "#0b1326",
+                    "secondary": "#ddb7ff",
+                    "inverse-on-surface": "#283044",
+                    "background": "#0b1326",
+                    "inverse-primary": "#494bd6",
+                    "on-tertiary-fixed": "#2a1700",
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#ddb7ff",
+                    "on-tertiary-container": "#3e2400",
+                    "on-secondary-fixed": "#2c0051",
+                    "surface-container": "#171f33",
+                    "tertiary-container": "#ca8100",
+                    "tertiary": "#ffb95f",
+                    "on-surface": "#dae2fd",
+                    "surface-container-highest": "#2d3449",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "surface-variant": "#2d3449",
+                    "on-primary": "#1000a9",
+                    "primary-container": "#8083ff",
+                    "tertiary-fixed": "#ffddb8",
+                    "secondary-container": "#6f00be",
+                    "on-primary-container": "#0d0096",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "outline": "#908fa0",
+                    "surface-container-high": "#222a3d",
+                    "error-container": "#93000a",
+                    "surface-container-lowest": "#060e20"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px",
+                    "unit": "8px",
+                    "card-padding": "32px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "user-prompt": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "user-prompt": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "300"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background selection:bg-primary/30 selection:text-primary min-h-screen relative overflow-hidden">
+<!-- Ambient Background Elements -->
+<div class="ambient-glow bg-primary/20 w-[600px] h-[600px] -top-48 -right-48"></div>
+<div class="ambient-glow bg-tertiary/10 w-[500px] h-[500px] bottom-0 -left-24"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full backdrop-blur-md flex justify-between items-center px-margin-desktop py-4 z-50">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-light tracking-tighter text-on-surface">ASTRA</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center bg-surface-container/40 rounded-full px-4 py-2 border border-white/5">
+<span class="material-symbols-outlined text-body-sm mr-2 text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm text-on-surface placeholder:text-on-surface-variant/50 w-64" placeholder="Recall a specific context..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary font-label-caps text-label-caps px-6 py-2.5 rounded-full hover:opacity-80 transition-opacity">
+                New Session
+            </button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-72 bg-surface-container/60 backdrop-blur-xl border-r border-white/10 flex flex-col p-6 z-40">
+<div class="mb-12 pt-16">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">ASTRA Intelligence</h2>
+<p class="text-on-surface-variant text-body-sm opacity-70">Contextual Core</p>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-body-md text-body-md">History</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary font-bold border-r-2 border-secondary bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-body-md text-body-md">Memory</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined">handyman</span>
+<span class="font-body-md text-body-md">Tools</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest border border-primary/20">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional and artistic portrait of a woman with a thoughtful expression. She has short, dark hair and is wearing a minimalist, dark gray turtleneck. The lighting is soft and cinematic, with a gentle purple and blue rim light that complements a dark, high-tech studio environment. The overall mood is sophisticated and intelligent." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTUrKKeZcZAgMOfedAvWm8ZcUgCfEgpXJrGdtbykS4RsfEx8I6XVF3Pd48t2xh3YS51kr4n9H5DQSEwaIxZA1_sDg1lRcduZ0ue7k4T6qQa3NAOMa3Zhe3Jvx1djLo8UhCRmgg7ijHy7rQmMiU9tgvZUhLbW3E2d2xUbKlQ0FRkulc_PWHFf6dWz1XJ_5in98JJf1YNwLgd9kAn6mXsraUqtUcbBDOfIGF-WooPJCBlFNTIr84fdp50EnEbqE9qqj70ZZqixiJ6BU"/>
+</div>
+<div class="flex flex-col">
+<span class="text-body-sm font-medium">Elena Vance</span>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest">Premium Core</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-72 pt-24 px-margin-desktop min-h-screen flex flex-col gap-10">
+<!-- Contextual Map Visualization Section -->
+<section class="relative h-[500px] w-full glass-card rounded-3xl overflow-hidden flex items-center justify-center">
+<!-- Background pattern for the map -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, rgba(192, 193, 255, 0.4) 1px, transparent 0); background-size: 40px 40px;"></div>
+<!-- Central Node -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-24 h-24 rounded-full bg-primary/20 border-2 border-primary memory-pulse flex items-center justify-center backdrop-blur-md mb-4 group cursor-pointer hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-display-lg text-primary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="text-center">
+<h3 class="font-headline-lg text-headline-lg text-on-surface">Neural Nexus</h3>
+<p class="text-body-sm text-primary opacity-80 uppercase tracking-widest font-semibold">Active Project: Quantum UI</p>
+</div>
+</div>
+<!-- Floating Memory Clusters (Organic Layout) -->
+<div class="absolute top-1/4 left-1/4 group cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-secondary/10 border border-secondary/40 backdrop-blur-sm flex items-center justify-center mb-2 hover:bg-secondary/30 transition-all">
+<span class="material-symbols-outlined text-secondary">palette</span>
+</div>
+<div class="absolute left-14 top-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container px-3 py-1 rounded-md text-body-sm border border-white/5">Visual Syntax</div>
+</div>
+<div class="absolute bottom-1/3 left-[15%] group cursor-pointer">
+<div class="w-16 h-16 rounded-full bg-tertiary/10 border border-tertiary/40 backdrop-blur-sm flex items-center justify-center mb-2 hover:bg-tertiary/30 transition-all">
+<span class="material-symbols-outlined text-tertiary">code</span>
+</div>
+<div class="absolute left-18 top-4 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container px-3 py-1 rounded-md text-body-sm border border-white/5">Component Logic</div>
+</div>
+<div class="absolute top-1/3 right-[20%] group cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-primary/10 border border-primary/40 backdrop-blur-sm flex items-center justify-center mb-2 hover:bg-primary/30 transition-all">
+<span class="material-symbols-outlined text-primary">psychology</span>
+</div>
+<div class="absolute right-16 top-4 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container px-3 py-1 rounded-md text-body-sm border border-white/5">User Behavior</div>
+</div>
+<div class="absolute bottom-[10%] right-[30%] group cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-on-surface-variant/10 border border-on-surface-variant/40 backdrop-blur-sm flex items-center justify-center mb-2 hover:bg-on-surface-variant/30 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+</div>
+<div class="absolute left-12 top-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity bg-surface-container px-3 py-1 rounded-md text-body-sm border border-white/5">Legacy Assets</div>
+</div>
+<!-- Connecting Lines (SVG Decoration) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-20">
+<line class="text-secondary" stroke="currentColor" stroke-dasharray="4" stroke-width="1" x1="25%" x2="50%" y1="25%" y2="50%"></line>
+<line class="text-tertiary" stroke="currentColor" stroke-dasharray="4" stroke-width="1" x1="15%" x2="50%" y1="66%" y2="50%"></line>
+<line class="text-primary" stroke="currentColor" stroke-dasharray="4" stroke-width="1" x1="80%" x2="50%" y1="33%" y2="50%"></line>
+</svg>
+</section>
+<!-- Context Layers and Memory Feed Grid -->
+<div class="grid grid-cols-12 gap-8 pb-32">
+<!-- Active Context Layers List -->
+<section class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h4 class="font-headline-lg text-body-md font-bold uppercase tracking-widest text-on-surface-variant">Active Contexts</h4>
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-bold">4 LAYERS</span>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Layer Item -->
+<div class="glass-card p-4 rounded-2xl flex items-center justify-between group hover:border-primary/40 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(192,193,255,1)]"></div>
+<div>
+<p class="text-body-md font-medium">Design Preferences</p>
+<p class="text-[11px] text-on-surface-variant/60">Updated 2h ago</p>
+</div>
+</div>
+<div class="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-3 h-3 bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="glass-card p-4 rounded-2xl flex items-center justify-between group hover:border-secondary/40 transition-all">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(221,183,255,1)]"></div>
+<div>
+<p class="text-body-md font-medium">Project Constraints</p>
+<p class="text-[11px] text-on-surface-variant/60">Updated 5d ago</p>
+</div>
+</div>
+<div class="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-3 h-3 bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="glass-card p-4 rounded-2xl flex items-center justify-between group hover:border-tertiary/40 transition-all opacity-60">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-on-surface-variant"></div>
+<div>
+<p class="text-body-md font-medium">External API Specs</p>
+<p class="text-[11px] text-on-surface-variant/60">Hibernating</p>
+</div>
+</div>
+<div class="w-10 h-5 bg-surface-container-highest rounded-full relative cursor-pointer">
+<div class="absolute left-1 top-1 w-3 h-3 bg-on-surface-variant rounded-full"></div>
+</div>
+</div>
+<button class="border border-white/10 border-dashed p-4 rounded-2xl flex items-center justify-center gap-2 text-on-surface-variant hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-body-sm">add</span>
+<span class="text-body-sm font-medium">Inject New Layer</span>
+</button>
+</div>
+</section>
+<!-- Memory Feed -->
+<section class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h4 class="font-headline-lg text-body-md font-bold uppercase tracking-widest text-on-surface-variant">Learned Insights</h4>
+<div class="flex items-center gap-2">
+<span class="text-body-sm text-on-surface-variant">Sort by:</span>
+<select class="bg-transparent border-none text-body-sm text-primary font-bold focus:ring-0 p-0 cursor-pointer">
+<option class="bg-surface">Relevance</option>
+<option class="bg-surface">Recent</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-4 no-scrollbar">
+<!-- Memory Entry -->
+<div class="glass-card p-6 rounded-3xl hover:translate-x-1 transition-transform border-l-4 border-l-primary">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<span class="bg-primary/10 text-primary p-2 rounded-xl material-symbols-outlined">lightbulb</span>
+<div>
+<h5 class="font-body-md font-bold text-on-surface">Asymmetric Layout Preference</h5>
+<p class="text-[11px] text-on-surface-variant">Oct 24, 2023 • 14:22</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[20px] font-display-lg text-primary leading-none">98%</span>
+<span class="text-[9px] text-on-surface-variant uppercase tracking-tighter">Match</span>
+</div>
+</div>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                            Detected recurring pattern of user engagement with offset grid structures. ASTRA has prioritized dynamic asymmetry for all future generative UI outputs to align with established aesthetic intent.
+                        </p>
+</div>
+<div class="glass-card p-6 rounded-3xl hover:translate-x-1 transition-transform border-l-4 border-l-secondary">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<span class="bg-secondary/10 text-secondary p-2 rounded-xl material-symbols-outlined">auto_graph</span>
+<div>
+<h5 class="font-body-md font-bold text-on-surface">Color Palette Calibration</h5>
+<p class="text-[11px] text-on-surface-variant">Oct 22, 2023 • 09:10</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[20px] font-display-lg text-secondary leading-none">82%</span>
+<span class="text-[9px] text-on-surface-variant uppercase tracking-tighter">Match</span>
+</div>
+</div>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                            Learned preference for high-saturation violet and indigo accents against deep navy backgrounds. Subdued "Peach" tones identified as secondary warm contrasts for specific error/success states.
+                        </p>
+</div>
+<div class="glass-card p-6 rounded-3xl hover:translate-x-1 transition-transform border-l-4 border-l-tertiary">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<span class="bg-tertiary/10 text-tertiary p-2 rounded-xl material-symbols-outlined">history_edu</span>
+<div>
+<h5 class="font-body-md font-bold text-on-surface">Semantic Logic Pattern</h5>
+<p class="text-[11px] text-on-surface-variant">Oct 19, 2023 • 18:45</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[20px] font-display-lg text-tertiary leading-none">65%</span>
+<span class="text-[9px] text-on-surface-variant uppercase tracking-tighter">Match</span>
+</div>
+</div>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                            Core logic for "Shared Components" established. ASTRA now understands the hierarchy between Immutable Content and Mandatory Styling within the developer framework.
+                        </p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Floating Prompt Bar) -->
+<div class="fixed bottom-0 w-full flex justify-center pb-8 px-4 z-50 pointer-events-none">
+<div class="w-full max-w-2xl pointer-events-auto">
+<div class="bg-surface-container-low/40 backdrop-blur-3xl border border-white/15 ring-1 ring-primary/20 rounded-full shadow-[0_0_40px_rgba(128,131,255,0.2)] p-2 flex items-center gap-4 group transition-all focus-within:scale-[1.02]">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-body-md" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<input class="bg-transparent border-none focus:ring-0 text-user-prompt font-user-prompt w-full text-on-surface placeholder:text-on-surface-variant/40" placeholder="Ask ASTRA to recall or modify a memory..." type="text"/>
+<button class="mr-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

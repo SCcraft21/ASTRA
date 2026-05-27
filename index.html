@@ -143,7 +143,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-<style data-stitch-cursor="">*{cursor:crosshair!important}[contenteditable="true"]:focus,.cursor-text:focus{cursor:text!important}</style><style data-stitch-scroll-lock="">html,body{overflow:hidden!important}</style></head>
+</head>
 <body class="font-body-md text-on-surface selection:bg-primary-container selection:text-on-primary-container">
 <!-- TopAppBar Navigation Shell -->
 <header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-desktop py-4 backdrop-blur-md">
@@ -175,11 +175,11 @@
 <span class="material-symbols-outlined">history</span>
 <span class="">History</span>
 </a>
-<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-white/5 transition-colors" href="/memory">
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-white/5 transition-colors" href="#">
 <span class="material-symbols-outlined">psychology</span>
 <span class="">Memory</span>
 </a>
-<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-white/5 transition-colors" href="/developer">
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-white/5 transition-colors" href="#">
 <span class="material-symbols-outlined">handyman</span>
 <span class="">Tools</span>
 </a>
@@ -194,7 +194,86 @@
 <!-- Main Conversation Canvas -->
 <main class="md:ml-72 pt-32 pb-48 px-4 md:px-margin-desktop min-h-screen">
 <div class="max-w-4xl mx-auto space-y-12 canvas-stream">
-<!-- Chat stream will be inserted here -->
+<!-- User Intent Block -->
+<div class="flex justify-end fade-in-up" style="animation-delay: 0.1s;">
+<div class="max-w-[80%] glass-card-light p-card-padding rounded-[32px] rounded-tr-none">
+<p class="font-user-prompt text-user-prompt text-on-surface">
+                        Analyze the architectural trends of the next decade, focusing on bio-mimicry and sustainable vertical urbanism. Compare this with current smart-city implementations.
+                    </p>
+</div>
+</div>
+<!-- AI Response: Thinking/Status -->
+<div class="flex gap-4 fade-in-up" style="animation-delay: 0.3s;">
+<div class="flex-shrink-0 w-8 h-8 rounded-full glass-card-light flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: &quot;FILL&quot; 1;">auto_awesome</span>
+</div>
+<div class="flex flex-wrap gap-2 pt-1">
+<span class="px-3 py-1 rounded-full glass-card text-[12px] text-secondary border-secondary/20">Analyzing Source Materials</span>
+<span class="px-3 py-1 rounded-full glass-card text-[12px] text-tertiary border-tertiary/20">Modeling Projections</span>
+</div>
+</div>
+<!-- AI Response: Analysis Block (Asymmetric) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 fade-in-up" style="animation-delay: 0.5s;">
+<div class="md:col-span-11 glass-card p-card-padding rounded-[40px] shadow-2xl">
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-headline-lg text-headline-lg text-primary">Vertical Urbanism 2030</h3>
+<div class="flex gap-2">
+<button class="p-2 rounded-full hover:bg-white/5 transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+<button class="p-2 rounded-full hover:bg-white/5 transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">ios_share</span>
+</button>
+</div>
+</div>
+<div class="grid md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<p class="font-body-md text-body-md leading-relaxed text-on-surface/90">
+                                The convergence of modular timber construction and AI-driven environmental management is redefining the skyline. Unlike the static smart cities of 2020, future urban centers operate as respiratory systems—filtering air, recycling greywater at the floor level, and utilizing photobioreactors in building envelopes.
+                            </p>
+<ul class="space-y-3">
+<li class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="text-body-sm font-body-sm">Self-healing fungal concrete structures</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-body-sm font-body-sm">Decentralized micro-grid autonomy</span>
+</li>
+</ul>
+</div>
+<div class="glass-card-light rounded-3xl p-6 relative overflow-hidden h-64 border-white/5">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent"></div>
+<div class="relative h-full flex flex-col justify-between">
+<p class="text-[12px] font-label-caps text-on-surface-variant uppercase">Efficiency Projection</p>
+<div class="flex items-end gap-3 h-32 px-4">
+<div class="flex-1 bg-primary/20 rounded-t-lg h-[40%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-lg h-[65%]"></div>
+<div class="flex-1 bg-primary/60 rounded-t-lg h-[50%]"></div>
+<div class="flex-1 bg-primary rounded-t-lg h-[90%] relative">
+<div class="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white]"></div>
+</div>
+</div>
+<div class="flex justify-between text-[10px] text-on-surface-variant px-2">
+<span class="">2024</span><span class="">2026</span><span class="">2028</span><span class="">2030</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Response: Creative Block (Offset) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 fade-in-up" style="animation-delay: 0.7s;">
+<div class="md:col-start-2 md:col-span-11 glass-card-light p-card-padding rounded-[40px] border-l-4 border-l-secondary relative">
+<div class="absolute -left-3 top-10 w-6 h-6 bg-secondary/20 rounded-full blur-xl"></div>
+<p class="font-display-lg text-[24px] italic text-secondary leading-tight mb-4">
+                        "Architecture is becoming the living tissue of human intent."
+                    </p>
+<p class="font-body-md text-body-md text-on-surface/80">
+                        In this scenario, a building is no longer an object in space, but an event in time. We are seeing the death of the 'grid' in favor of organic hubs that mirror mycelial networks for resource distribution.
+                    </p>
+</div>
+</div>
 </div>
 </main>
 <!-- Bottom Interaction Shell -->
@@ -206,12 +285,12 @@
 <button class="text-on-surface-variant hover:text-primary transition-colors">
 <span class="material-symbols-outlined">attach_file</span>
 </button>
-<input id="chat-input" class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/50 font-user-prompt text-[16px] py-4" placeholder="Imagine something or ask a question..." type="text">
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant/50 font-user-prompt text-[16px] py-4" placeholder="Imagine something or ask a question..." type="text">
 <div class="flex items-center gap-3">
 <div class="w-8 h-8 rounded-full glass-card flex items-center justify-center">
 <span class="material-symbols-outlined text-[20px] text-secondary">mic</span>
 </div>
-<button id="submit-btn" class="bg-primary text-on-primary p-3 rounded-full shadow-lg hover:brightness-110 transition-all">
+<button class="bg-primary text-on-primary p-3 rounded-full shadow-lg hover:brightness-110 transition-all">
 <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">auto_awesome</span>
 </button>
 </div>
@@ -238,93 +317,6 @@
 <span class="text-[10px]">Tools</span>
 </button>
 </div>
-<script>
-    const chatInput = document.getElementById('chat-input');
-    const submitBtn = document.getElementById('submit-btn');
-    const chatContainer = document.querySelector('.canvas-stream');
 
-    async function sendMessage() {
-        const query = chatInput.value.trim();
-        if (!query) return;
 
-        // Add user message
-        const userHtml = `
-        <div class="flex justify-end fade-in-up" style="animation-delay: 0.1s;">
-            <div class="max-w-[80%] glass-card-light p-card-padding rounded-[32px] rounded-tr-none">
-                <p class="font-user-prompt text-user-prompt text-on-surface">${query}</p>
-            </div>
-        </div>`;
-        chatContainer.insertAdjacentHTML('beforeend', userHtml);
-        chatInput.value = '';
-
-        // Add loading indicator
-        const loadingHtml = `
-        <div id="loading-indicator" class="flex gap-4 fade-in-up" style="animation-delay: 0.1s;">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full glass-card-light flex items-center justify-center">
-                <span class="material-symbols-outlined text-[18px] text-primary">auto_awesome</span>
-            </div>
-            <div class="flex flex-wrap gap-2 pt-1">
-                <span class="px-3 py-1 rounded-full glass-card text-[12px] text-secondary border-secondary/20 thinking-pulse">Thinking...</span>
-            </div>
-        </div>`;
-        chatContainer.insertAdjacentHTML('beforeend', loadingHtml);
-        window.scrollTo(0, document.body.scrollHeight);
-
-        try {
-            // Use production URL if not on localhost
-            const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                ? 'http://localhost:8000' 
-                : 'https://your-backend-app.onrender.com'; // TODO: Replace with your actual Render URL
-            const apiUrl = `${baseUrl}/api/generate`;
-
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: query })
-            });
-
-            const data = await response.json();
-            
-            // Remove loading
-            const loadingIndicator = document.getElementById('loading-indicator');
-            if (loadingIndicator) loadingIndicator.remove();
-
-            // Add bot response
-            const botHtml = `
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 fade-in-up" style="animation-delay: 0.1s;">
-                <div class="md:col-span-11 glass-card p-card-padding rounded-[40px] shadow-2xl">
-                    <div class="space-y-4">
-                        <p class="font-body-md text-body-md leading-relaxed text-on-surface/90">
-                            ${data.response}
-                        </p>
-                    </div>
-                </div>
-            </div>`;
-            chatContainer.insertAdjacentHTML('beforeend', botHtml);
-            window.scrollTo(0, document.body.scrollHeight);
-        } catch (error) {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            if (loadingIndicator) loadingIndicator.remove();
-            
-            console.error('Error:', error);
-            const errorHtml = `
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 fade-in-up">
-                <div class="md:col-span-11 glass-card p-card-padding rounded-[40px] shadow-2xl border border-error">
-                    <p class="font-body-md text-body-md leading-relaxed text-error">
-                        Connection error. Make sure the API server is running on port 8000.
-                    </p>
-                </div>
-            </div>`;
-            chatContainer.insertAdjacentHTML('beforeend', errorHtml);
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-    }
-
-    submitBtn.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
-</script>
 </body></html>
