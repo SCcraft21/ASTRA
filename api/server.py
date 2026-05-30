@@ -207,14 +207,20 @@ def generate_response(request: GenerateRequest):
 
     return GenerateResponse(response=response.strip())
 
-# HTML Page Routes (matching vercel.json routing for perfect local development)
+def get_index_path():
+    dist_index = os.path.join(BASE_DIR, "dist", "index.html")
+    if os.path.exists(dist_index):
+        return dist_index
+    return os.path.join(BASE_DIR, "index.html")
+
+# HTML Page Routes (supporting client-side SPA routing for new premium dashboard)
 @app.get("/")
 def read_hero():
-    return FileResponse(os.path.join(BASE_DIR, "pages", "hero.html"))
+    return FileResponse(get_index_path())
 
 @app.get("/chat")
 def read_chat():
-    return FileResponse(os.path.join(BASE_DIR, "index.html"))
+    return FileResponse(get_index_path())
 
 @app.get("/capabilities")
 def read_capabilities():
@@ -222,7 +228,7 @@ def read_capabilities():
 
 @app.get("/memory")
 def read_memory():
-    return FileResponse(os.path.join(BASE_DIR, "pages", "deep_memory.html"))
+    return FileResponse(get_index_path())
 
 @app.get("/threshold")
 def read_threshold():
@@ -230,11 +236,15 @@ def read_threshold():
 
 @app.get("/register")
 def read_register():
-    return FileResponse(os.path.join(BASE_DIR, "pages", "registration.html"))
+    return FileResponse(get_index_path())
 
 @app.get("/login")
 def read_login():
-    return FileResponse(os.path.join(BASE_DIR, "pages", "login.html"))
+    return FileResponse(get_index_path())
+
+@app.get("/api-keys")
+def read_api_keys():
+    return FileResponse(get_index_path())
 
 @app.get("/developer")
 def read_developer():
@@ -244,9 +254,13 @@ def read_developer():
 def read_ambient():
     return FileResponse(os.path.join(BASE_DIR, "pages", "ambient.html"))
 
-# Serve static files for local development
+# Serve static files for local development (either compiled 'dist/' or base dir)
 from fastapi.staticfiles import StaticFiles
-app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="static")
+dist_dir = os.path.join(BASE_DIR, "dist")
+if os.path.exists(dist_dir):
+    app.mount("/", StaticFiles(directory=dist_dir, html=True), name="static")
+else:
+    app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn

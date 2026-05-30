@@ -1,31 +1,11 @@
-
-# ------------------ DATA ------------------
-data/
-*.npy
-*.csv
-*.txt
-!requirements.txt
-!tokenizer/merges.txt
-
-# ------------------ MODEL ------------------
-# checkpoints/
-# *.pt
-
-# ------------------ PYTHON ------------------
-__pycache__/
-*.pyc
-
-# ------------------ ENV ------------------
-venv/
-.venv/
-.env
-.env.local
-
-# ------------------ OS ------------------
+node_modules/
+build/
+dist/
+coverage/
 .DS_Store
-Thumbs.db
-data/
-# checkpoints/
-*.npy
-# *.pt
-venv/
+*.log
+.env*
+!.env.example
+.venv/
+__pycache__/
+.vercel/
