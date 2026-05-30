@@ -130,174 +130,57 @@ export default function ChatView({
 
               // render AI output
               return (
-                <div key={message.id} className="space-y-8 fade-in-up">
-                  {/* AI Response Card: Asymmetric Analysis Card */}
-                  <div className="glass-card p-8 rounded-[40px] shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#c0c1ff]/5 blur-3xl rounded-full"></div>
-                    
-                    {/* Card Headings */}
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-bold text-[#ffb95f] tracking-widest uppercase">
-                          AI Analysis Report
-                        </span>
-                        <h3 className="text-2xl md:text-3xl font-light text-[#c0c1ff] tracking-tight">
-                          Vertical Urbanism & Biomimicry
-                        </h3>
-                      </div>
-                      <div className="flex gap-2">
+                <div key={message.id} className="flex gap-4 items-start max-w-3xl fade-in-up mt-6">
+                  {/* AI Icon Avatar */}
+                  <div className="w-9 h-9 rounded-full bg-[#c0c1ff]/15 border border-[#c0c1ff]/30 flex items-center justify-center shrink-0 shadow-inner">
+                    <span className="material-symbols-outlined text-[18px] text-[#c0c1ff] material-symbols-fill">auto_awesome</span>
+                  </div>
+
+                  {/* AI Bubble Card */}
+                  <div className="space-y-3 flex-1 min-w-0">
+                    <div className="glass-card p-6 rounded-3xl rounded-tl-none shadow-xl border border-white/5 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#c0c1ff]/5 blur-2xl rounded-full pointer-events-none"></div>
+                      
+                      {/* Copy Action Floating Button */}
+                      <div className="absolute top-4 right-4 flex gap-1">
                         <button
                           onClick={() => handleCopyText(message.text)}
-                          title="Copy transcript"
-                          className="p-2 rounded-full hover:bg-white/10 text-[#c7c4d7] hover:text-white transition-all cursor-pointer"
+                          title="Copy message text"
+                          className="p-1.5 rounded-lg hover:bg-white/10 text-[#c7c4d7]/70 hover:text-white transition-all cursor-pointer flex items-center justify-center"
                         >
-                          <span className="material-symbols-outlined text-lg">content_copy</span>
-                        </button>
-                        <button
-                          onClick={() => showToast("Analysis shared successfully via secure ASTRA channels.", "success")}
-                          title="Share report"
-                          className="p-2 rounded-full hover:bg-white/10 text-[#c7c4d7] hover:text-white transition-all cursor-pointer"
-                        >
-                          <span className="material-symbols-outlined text-lg">ios_share</span>
+                          <span className="material-symbols-outlined text-[15px]">content_copy</span>
                         </button>
                       </div>
-                    </div>
 
-                    {/* Left Column Body Text + Right Column Interactive Chart Group */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                      
-                      <div className="space-y-5">
-                        <div className="text-sm text-[#dae2fd]/95 leading-relaxed font-body-md whitespace-pre-line">
-                          {message.text}
-                        </div>
+                      {/* AI Markdown Text */}
+                      <div className="text-sm text-[#dae2fd]/95 leading-relaxed whitespace-pre-wrap pr-6">
+                        {message.text}
+                      </div>
 
-                        {/* Bullet Highlights checklist */}
-                        <div className="pt-2">
-                          <span className="text-[10px] font-bold text-[#c7c4d7]/70 tracking-widest uppercase block mb-3">
-                            Key Paradigm Shifts
+                      {/* Dynamic Grounding Citations */}
+                      {citeSources && message.citations && message.citations.length > 0 && (
+                        <div className="mt-4 pt-3.5 border-t border-white/5">
+                          <span className="text-[9px] font-bold text-[#ffb95f] tracking-widest uppercase block mb-2 font-mono">
+                            Sources Calibrated
                           </span>
-                          <ul className="space-y-3">
-                            <li className="flex items-center gap-3">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#ddb7ff] shadow-[0_0_6px_#ddb7ff]"></span>
-                              <span className="text-xs text-[#dae2fd]/85">Self-healing bio-concrete fungal structures</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#c0c1ff] shadow-[0_0_6px_#c0c1ff]"></span>
-                              <span className="text-xs text-[#dae2fd]/85">Decentralized micro-grid water autonomy</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#ffb95f] shadow-[0_0_6px_#ffb95f]"></span>
-                              <span className="text-xs text-[#dae2fd]/85">Photobioreactors embedded in dynamic facades</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-
-                      {/* Interactive Bar Chart representing projection data */}
-                      {visualMode && (
-                        <div className="glass-card-light rounded-3xl p-6 relative overflow-hidden h-72 border border-white/10 flex flex-col justify-between w-full">
-                          <div className="absolute inset-0 bg-gradient-to-br from-[#c0c1ff]/5 to-transparent pointer-events-none"></div>
-                          
-                          <div className="flex justify-between items-center z-10 border-b border-white/5 pb-2">
-                            <p className="text-[11px] font-semibold text-[#c7c4d7] uppercase tracking-widest">
-                              Efficiency Growth Projection
-                            </p>
-                            <span className="text-[10px] text-[#ffb95f] bg-[#ca8100]/20 px-2 py-0.5 rounded-full border border-[#ffb95f]/20">
-                              OPTIMAL (90%)
-                            </span>
-                          </div>
-
-                          {/* SVG / HTML dynamic chart grid representation */}
-                          <div className="flex items-end gap-3 h-36 px-4 z-10 relative">
-                            {/* Bar 2024 */}
-                            <div className="flex-1 flex flex-col items-center group/bar cursor-pointer">
-                              <div className="w-full bg-[#c0c1ff]/20 hover:bg-[#c0c1ff]/40 rounded-t-lg h-12 transition-all duration-300 relative">
-                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] text-[#c7c4d7] opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">
-                                  40%
-                                </div>
-                              </div>
-                              <span className="text-[9px] text-[#c7c4d7]/70 mt-2">2024</span>
-                            </div>
-
-                            {/* Bar 2026 */}
-                            <div className="flex-1 flex flex-col items-center group/bar cursor-pointer">
-                              <div className="w-full bg-[#c0c1ff]/40 hover:bg-[#c0c1ff]/60 rounded-t-lg h-20 transition-all duration-300 relative">
-                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] text-[#c7c4d7] opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">
-                                  65%
-                                </div>
-                              </div>
-                              <span className="text-[9px] text-[#c7c4d7]/70 mt-2">2026</span>
-                            </div>
-
-                            {/* Bar 2028 */}
-                            <div className="flex-1 flex flex-col items-center group/bar cursor-pointer">
-                              <div className="w-full bg-[#c0c1ff]/30 hover:bg-[#c0c1ff]/50 rounded-t-lg h-16 transition-all duration-300 relative">
-                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] text-[#c7c4d7] opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">
-                                  50%
-                                </div>
-                              </div>
-                              <span className="text-[9px] text-[#c7c4d7]/70 mt-2">2028</span>
-                            </div>
-
-                            {/* Bar 2030 (target highlighted glow) */}
-                            <div className="flex-1 flex flex-col items-center group/bar cursor-pointer">
-                              <div className="w-full bg-[#c0c1ff] rounded-t-lg h-28 relative shadow-[0_0_15px_rgba(192,193,255,0.4)]">
-                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-white font-bold whitespace-nowrap">
-                                  90%
-                                </div>
-                                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white] animate-ping"></div>
-                              </div>
-                              <span className="text-[9px] text-white font-bold mt-2">2030</span>
-                            </div>
-                          </div>
-
-                          <div className="text-[10px] text-[#c7c4d7]/60 leading-tight border-t border-white/5 pt-2 flex items-center justify-between">
-                            <span>* Calculated using bio-mimicry metrics</span>
-                            <span className="text-secondary font-mono">ASTRA Engine v1.4</span>
+                          <div className="flex flex-wrap gap-2">
+                            {message.citations.map((c, idx) => (
+                              <a
+                                key={idx}
+                                href={c.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[10px] bg-[#c0c1ff]/10 text-[#c0c1ff] border border-[#c0c1ff]/20 hover:bg-[#c0c1ff]/25 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 transition-all"
+                              >
+                                <span className="material-symbols-outlined text-[11px]">link</span>
+                                <span className="truncate max-w-[150px]">{c.title}</span>
+                              </a>
+                            ))}
                           </div>
                         </div>
                       )}
-
-                    </div>
-
-                    {/* Rendering Citations and Search Grounding Sources if present */}
-                    {citeSources && message.citations && message.citations.length > 0 && (
-                      <div className="mt-6 pt-4 border-t border-white/5">
-                        <span className="text-[10px] font-bold text-[#ffb95f] tracking-widest uppercase block mb-2">
-                          Grounding Citations
-                        </span>
-                        <div className="flex flex-wrap gap-2.5">
-                          {message.citations.map((c, idx) => (
-                            <a
-                              key={idx}
-                              href={c.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs bg-[#c0c1ff]/10 text-[#c0c1ff] border border-[#c0c1ff]/20 hover:bg-[#c0c1ff]/25 px-3 py-1 rounded-full flex items-center gap-1.5 transition-all"
-                            >
-                              <span className="material-symbols-outlined text-[12px]">link</span>
-                              <span className="truncate max-w-[180px]">{c.title}</span>
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                  </div>
-
-                  {/* Offset Secondary Quote Block */}
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <div className="md:col-start-2 md:col-span-11 glass-card-light p-6 rounded-[32px] border-l-4 border-l-[#ddb7ff] relative overflow-hidden">
-                      <div className="absolute -left-3 top-6 w-12 h-12 bg-[#ddb7ff]/20 rounded-full blur-xl"></div>
-                      <p className="text-lg md:text-xl italic text-[#ddb7ff] leading-snug mb-3">
-                        "Architecture is becoming the living tissue of human intent."
-                      </p>
-                      <p className="text-xs text-[#c7c4d7]/90 leading-relaxed font-body-sm">
-                        In this scenario, a building is no longer an static object in space, but an event in time. We are witnessing the shift toward organic hubs that mirror mycelial networks for deep, decentralized resource distribution.
-                      </p>
                     </div>
                   </div>
-
                 </div>
               );
             })}
@@ -396,16 +279,7 @@ export default function ChatView({
               <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
               Cite Sources
             </button>
-            <button
-              onClick={() => {
-                setVisualMode(!visualMode);
-                showToast(`Visual projection widgets ${!visualMode ? "enabled" : "disabled"}.`);
-              }}
-              className={`hover:text-white transition-colors flex items-center gap-1 cursor-pointer ${visualMode ? "text-[#ddb7ff]" : ""}`}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-              Visual Mode
-            </button>
+
             <button
               onClick={() => {
                 showToast("System context logs synchronized with Active Memory Nexus.");

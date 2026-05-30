@@ -3,7 +3,7 @@ import { DeveloperKey } from "../lib/supabase";
 
 interface ApiPortalViewProps {
   keys: DeveloperKey[];
-  onGenerateKey: (name: string, scope: string) => Promise<void>;
+  onGenerateKey: (name: string, scope: string, requestsLimit: number) => Promise<void>;
   onRevokeKey: (id: string) => Promise<void>;
   isKeysLoading: boolean;
 }
@@ -16,6 +16,7 @@ export default function ApiPortalView({
 }: ApiPortalViewProps) {
   const [keyName, setKeyName] = useState("");
   const [selectedScope, setSelectedScope] = useState("Full Access (Read/Write)");
+  const [requestsLimit, setRequestsLimit] = useState<number>(1000);
   const [showDocTab, setShowDocTab] = useState<"curl" | "node" | "python">("curl");
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
   const [revealedKeys, setRevealedKeys] = useState<{ [id: string]: boolean }>({});
@@ -23,7 +24,7 @@ export default function ApiPortalView({
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!keyName.trim()) return;
-    await onGenerateKey(keyName.trim(), selectedScope);
+    await onGenerateKey(keyName.trim(), selectedScope, requestsLimit);
     setKeyName("");
   };
 
@@ -89,6 +90,32 @@ export default function ApiPortalView({
                   onChange={(e) => setKeyName(e.target.value)}
                   className="w-full bg-[#0b1326]/50 border border-white/10 hover:border-white/25 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#c0c1ff]/50 transition-all font-medium placeholder-[#c7c4d7]/30"
                 />
+              </div>
+
+              {/* Input: Metered Request Quota Limit */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-[#c7c4d7]/60 uppercase tracking-widest font-mono block">
+                  Metered Request Quota Limit (Requests)
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[100, 1000, 5000, 10000].map((limit) => {
+                    const isSelected = requestsLimit === limit;
+                    return (
+                      <button
+                        type="button"
+                        key={limit}
+                        onClick={() => setRequestsLimit(limit)}
+                        className={`py-2 px-3 text-xs font-semibold rounded-xl border text-center transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-[#c0c1ff]/15 border-[#c0c1ff]/30 text-white"
+                            : "bg-[#0b1326]/30 border-white/5 text-[#c7c4d7]/60 hover:border-white/10 hover:text-white"
+                        }`}
+                      >
+                        {limit}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Scope selectors checkboxes as glowing buttons */}
@@ -201,9 +228,10 @@ export default function ApiPortalView({
                   <thead>
                     <tr className="border-b border-white/5 text-[9px] font-bold text-[#c7c4d7]/50 uppercase tracking-widest font-mono">
                       <th className="py-3 px-1">Identifier</th>
-                      <th className="py-3 px-2">Scope Scope</th>
+                      <th className="py-3 px-2">Scope</th>
                       <th className="py-3 px-2">Secret Token Key</th>
-                      <th className="py-3 px-1 text-right">Action Authority</th>
+                      <th className="py-3 px-2">Usage Meter</th>
+                      <th className="py-3 px-1 text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
@@ -265,6 +293,22 @@ export default function ApiPortalView({
                             </div>
                           </td>
 
+                          {/* Usage Meter col */}
+                          <td className="py-3 px-2 min-w-[140px]">
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between text-[10px] text-[#c7c4d7]/60 font-mono">
+                                <span>{key.requests_count || 0} / {key.requests_limit || 1000}</span>
+                                <span>{Math.round(((key.requests_count || 0) / (key.requests_limit || 1000)) * 100)}%</span>
+                              </div>
+                              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-[#c0c1ff] to-[#ffb95f] rounded-full transition-all duration-500" 
+                                  style={{ width: `${Math.min(((key.requests_count || 0) / (key.requests_limit || 1000)) * 100, 100)}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          </td>
+
                           {/* Action Col */}
                           <td className="py-3 px-1 text-right">
                             <button
@@ -321,7 +365,7 @@ export default function ApiPortalView({
             {/* Display Code snippet */}
             <div className="bg-[#0b1326]/70 border border-white/5 rounded-2xl p-4.5 font-mono text-[11px] leading-relaxed relative text-[#c0c1ff]/90 overflow-x-auto select-all">
               {showDocTab === "curl" && (
-                <pre className="whitespace-pre-wrap">{`curl -X POST "https://api.astra-cognitive.ai/v1/context/generate" \\
+                <pre className="whitespace-pre-wrap">{`curl -X POST "http://localhost:8000/api/v1/context/generate" \\
   -H "Authorization: Bearer ${activeKeySample}" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -333,7 +377,7 @@ export default function ApiPortalView({
 
               {showDocTab === "node" && (
                 <pre className="whitespace-pre-wrap">{`const astraQuery = async () => {
-  const url = "https://api.astra-cognitive.ai/v1/context/generate";
+  const url = "http://localhost:8000/api/v1/context/generate";
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -355,7 +399,7 @@ export default function ApiPortalView({
               {showDocTab === "python" && (
                 <pre className="whitespace-pre-wrap">{`import requests
 
-url = "https://api.astra-cognitive.ai/v1/context/generate"
+url = "http://localhost:8000/api/v1/context/generate"
 headers = {
     "Authorization": "Bearer ${activeKeySample}",
     "Content-Type": "application/json"
@@ -376,7 +420,7 @@ print(response.json().get("generation"))`}</pre>
             <div className="mt-4 flex flex-col sm:flex-row gap-4 justify-between text-[10px] text-[#c7c4d7]/60 font-mono">
               <div className="flex items-center gap-1.5">
                 <span className="text-emerald-400 font-bold">POST</span>
-                <span className="text-white">/v1/context/generate</span>
+                <span className="text-white">/api/v1/context/generate</span>
               </div>
               <div className="flex items-center gap-1 text-[#ffb95f]">
                 <span className="material-symbols-outlined text-[13px]">rate_review</span>

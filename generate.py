@@ -50,8 +50,19 @@ with open("data/raw/corpus.txt", "r", encoding="utf-8") as f:
 
 print(f"Loaded {len(documents)} documents.")
 
-# Precompute embeddings
-doc_embeddings = embedder.encode(documents, show_progress_bar=True)
+# Precompute embeddings or load from cached file to start instantly
+import os
+embeddings_cache_path = "data/raw/corpus_embeddings.npy"
+
+if os.path.exists(embeddings_cache_path):
+    print("Loading precomputed RAG embeddings from cache...")
+    doc_embeddings = np.load(embeddings_cache_path)
+else:
+    print("Precomputing RAG embeddings (this may take a few minutes on first run)...")
+    doc_embeddings = embedder.encode(documents, show_progress_bar=True)
+    os.makedirs(os.path.dirname(embeddings_cache_path), exist_ok=True)
+    np.save(embeddings_cache_path, doc_embeddings)
+    print("RAG embeddings cached successfully.")
 
 
 # ------------------ RETRIEVE FUNCTION ------------------
@@ -90,37 +101,38 @@ def generate(tokens):
 
 
 # ------------------ MAIN LOOP ------------------
-while True:
-    user_input = input("\nUser: ")
+if __name__ == "__main__":
+    while True:
+        user_input = input("\nUser: ")
 
-    if user_input.lower() in ["exit", "quit"]:
-        print("Exiting ASTRA...")
-        break
+        if user_input.lower() in ["exit", "quit"]:
+            print("Exiting ASTRA...")
+            break
 
-    #RAG retrieval
-    retrieved_docs = retrieve(user_input)
-    context = "\n\n".join(retrieved_docs)
+        #RAG retrieval
+        retrieved_docs = retrieve(user_input)
+        context = "\n\n".join(retrieved_docs)
 
-    #Correct prompt format
-    prompt = f"""{context}
+        #Correct prompt format
+        prompt = f"""{context}
 
 <USER> {user_input}
 <SYSTEM>"""
 
-    # Tokenize
-    input_ids = tokenizer.encode(prompt).ids
-    tokens = torch.tensor(input_ids, dtype=torch.long).unsqueeze(0).to(device)
+        # Tokenize
+        input_ids = tokenizer.encode(prompt).ids
+        tokens = torch.tensor(input_ids, dtype=torch.long).unsqueeze(0).to(device)
 
-    # Generate
-    output_tokens = generate(tokens)
+        # Generate
+        output_tokens = generate(tokens)
 
-    # Decode
-    response = tokenizer.decode(output_tokens)
+        # Decode
+        response = tokenizer.decode(output_tokens)
 
-    # Extract response
-    if "<USER>" in response:
-        response = response.split("<USER>")[0]
-    if "<SYSTEM>" in response:
-        response = response.split("<SYSTEM>")[0]
+        # Extract response
+        if "<USER>" in response:
+            response = response.split("<USER>")[0]
+        if "<SYSTEM>" in response:
+            response = response.split("<SYSTEM>")[0]
 
-    print("\nASTRA:", response.strip())
+        print("\nASTRA:", response.strip())

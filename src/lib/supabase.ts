@@ -34,6 +34,8 @@ export interface DeveloperKey {
   scope: string;
   token: string;
   created: string;
+  requests_count: number;
+  requests_limit: number;
 }
 
 /**
@@ -163,6 +165,8 @@ export const supabaseDb = {
         scope: key.scope,
         token: key.token,
         created: key.created,
+        requests_count: key.requests_count,
+        requests_limit: key.requests_limit,
       });
     } catch (err) {
       console.error("Supabase upsert developer_keys error:", err);

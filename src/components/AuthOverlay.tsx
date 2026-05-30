@@ -54,7 +54,7 @@ export default function AuthOverlay({ onClose, onAuthenticate, defaultScreen = "
     if (!isSupabaseConfigured || !supabase) {
       // Try to authenticate using local FastAPI server first!
       try {
-        const url = screen === "login" ? "http://localhost:8000/api/login" : "http://localhost:8000/api/register";
+        const url = screen === "login" ? "/api/login" : "/api/register";
         const body = screen === "login" 
           ? { email, password }
           : { name, email, password };

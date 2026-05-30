@@ -59,6 +59,18 @@ def init_db():
             password_hash TEXT NOT NULL
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS developer_keys (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            name TEXT NOT NULL,
+            scope TEXT NOT NULL,
+            token TEXT UNIQUE NOT NULL,
+            created TEXT NOT NULL,
+            requests_count INTEGER DEFAULT 0 NOT NULL,
+            requests_limit INTEGER DEFAULT 1000 NOT NULL
+        )
+    ''')
     conn.commit()
     conn.close()
     print("[SUCCESS] Local SQLite database initialized.")
@@ -122,3 +134,60 @@ def verify_user(email: str, password: str):
     user = cursor.fetchone()
     conn.close()
     return user
+
+def validate_and_increment_key(token: str) -> dict | None:
+    if supabase_client is not None:
+        try:
+            # Query the key
+            response = supabase_client.table("developer_keys").select("*").eq("token", token).execute()
+            if not response.data:
+                return None
+            key = response.data[0]
+            
+            # Check limit
+            if key["requests_count"] >= key["requests_limit"]:
+                return {"valid": False, "reason": "Quota Exceeded"}
+            
+            # Increment count
+            new_count = key["requests_count"] + 1
+            supabase_client.table("developer_keys").update({"requests_count": new_count}).eq("id", key["id"]).execute()
+            
+            key["requests_count"] = new_count
+            return {"valid": True, "key": key}
+        except Exception as e:
+            print(f"[ERROR] Supabase error in validate_and_increment_key: {e}")
+            return None
+
+    # SQLite fallback
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM developer_keys WHERE token = ?", (token,))
+        row = cursor.fetchone()
+        if not row:
+            # Seed a demo key if it is requested and matches the offline demo token segment
+            if token.startswith("astra_"):
+                cursor.execute(
+                    "INSERT INTO developer_keys (id, user_id, name, scope, token, created, requests_count, requests_limit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    ("demo_id", "local_guest", "Demo Local Gateway", "Full Access (Read/Write)", token, "May 30, 2026", 0, 1000)
+                )
+                conn.commit()
+                cursor.execute("SELECT * FROM developer_keys WHERE token = ?", (token,))
+                row = cursor.fetchone()
+            else:
+                return None
+        
+        key = dict(row)
+        if key["requests_count"] >= key["requests_limit"]:
+            return {"valid": False, "reason": "Quota Exceeded"}
+
+        new_count = key["requests_count"] + 1
+        cursor.execute("UPDATE developer_keys SET requests_count = ? WHERE id = ?", (new_count, key["id"]))
+        conn.commit()
+        key["requests_count"] = new_count
+        return {"valid": True, "key": key}
+    except Exception as e:
+        print(f"[ERROR] SQLite error in validate_and_increment_key: {e}")
+        return None
+    finally:
+        conn.close()

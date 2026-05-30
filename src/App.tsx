@@ -66,21 +66,27 @@ const initialDeveloperKeys: DeveloperKey[] = [
     name: "Main Dashboard V2",
     scope: "Full Access (Read/Write)",
     token: "astra_live_6f00be8083ffc0c1ff39k1",
-    created: "May 12, 2026"
+    created: "May 12, 2026",
+    requests_count: 245,
+    requests_limit: 1000
   },
   {
     id: "2",
     name: "iOS Client - Beta",
     scope: "Context-Only Extraction",
     token: "astra_test_ca8100ffbddb8ffb95fr92m",
-    created: "Apr 28, 2026"
+    created: "Apr 28, 2026",
+    requests_count: 812,
+    requests_limit: 1000
   },
   {
     id: "3",
     name: "External Analytics Sync",
     scope: "Read-Only Analytics",
     token: "astra_read_171f332d3449dae2fdx21l",
-    created: "Mar 15, 2026"
+    created: "Mar 15, 2026",
+    requests_count: 47,
+    requests_limit: 5000
   }
 ];
 
@@ -314,7 +320,7 @@ export default function App() {
 
     try {
       // Try to query the local FastAPI PyTorch GPT server first
-      const backendUrl = "http://localhost:8000/api/generate";
+      const backendUrl = "/api/generate";
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout fallback
 
@@ -391,7 +397,7 @@ export default function App() {
   };
 
   // Provision customized client gateways Developer Keys
-  const handleGenerateKey = async (name: string, scope: string) => {
+  const handleGenerateKey = async (name: string, scope: string, requestsLimit: number) => {
     setIsKeysLoading(true);
     try {
       const prefix = scope.toLowerCase().includes("read") ? "astra_read" : scope.toLowerCase().includes("context") ? "astra_test" : "astra_live";
@@ -406,7 +412,9 @@ export default function App() {
         name,
         scope,
         token,
-        created: dateStr
+        created: dateStr,
+        requests_count: 0,
+        requests_limit: requestsLimit
       };
 
       if (supabaseUser) {

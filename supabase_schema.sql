@@ -39,7 +39,10 @@ CREATE TABLE IF NOT EXISTS developer_keys (
     user_id TEXT NOT NULL,
     name TEXT NOT NULL,
     scope TEXT NOT NULL,
-    token TEXT NOT NULL,
+    token TEXT UNIQUE NOT NULL,
     created TEXT NOT NULL,
+    requests_count INTEGER DEFAULT 0 NOT NULL,
+    requests_limit INTEGER DEFAULT 1000 NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
