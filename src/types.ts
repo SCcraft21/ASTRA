@@ -1,29 +1,39 @@
-export type AppTab = 'home' | 'chat' | 'memory' | 'api-keys';
-
-export type AuthScreen = 'login' | 'register' | 'authorized';
-
-export interface Message {
+export interface APIKey {
   id: string;
-  sender: 'user' | 'ai';
-  text: string;
-  loading?: boolean;
-  citations?: { title: string; url: string }[];
-  chartData?: { label: string; value: number }[] | null;
+  name: string;
+  value: string;
+  status: "Active" | "Revoked";
 }
 
-export interface ContextLayer {
+export interface ChatMessage {
   id: string;
-  title: string;
-  description: string;
-  updated: string;
-  active: boolean;
-}
-
-export interface LearnedInsight {
-  id: string;
-  title: string;
+  role: "user" | "model";
   content: string;
-  match: number;
-  type: string;
-  date: string;
+  date?: string;
+  simulated?: boolean;
 }
+
+export interface TelemetryMetrics {
+  apiCallsCurrent: number;
+  apiCallsMax: number;
+  memoryUsage: number;
+}
+
+export interface CrewMember {
+  id: string;
+  name: string;
+  title: string;
+  image: string;
+  hr: number;
+  o2: number;
+  isFavorite: boolean;
+}
+
+export interface MissionLog {
+  id: string;
+  title: string;
+  desc: string;
+  rawTime: string;
+}
+
+export type ViewType = "landing" | "login" | "dashboard" | "developer-console";

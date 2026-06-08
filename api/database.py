@@ -191,3 +191,96 @@ def validate_and_increment_key(token: str) -> dict | None:
         return None
     finally:
         conn.close()
+
+def create_developer_key(user_id: str, name: str, scope: str) -> dict | None:
+    import uuid
+    from datetime import datetime
+    key_id = str(uuid.uuid4())
+    token = f"astra_live_{hashlib.md5(key_id.encode()).hexdigest()[:16]}"
+    created = datetime.now().strftime("%b %d, %Y")
+    requests_count = 0
+    requests_limit = 1000
+
+    if supabase_client is not None:
+        try:
+            data = {
+                "id": key_id,
+                "user_id": user_id,
+                "name": name,
+                "scope": scope,
+                "token": token,
+                "created": created,
+                "requests_count": requests_count,
+                "requests_limit": requests_limit
+            }
+            supabase_client.table("developer_keys").insert(data).execute()
+            return data
+        except Exception as e:
+            print(f"[ERROR] Supabase error in create_developer_key: {e}")
+            return None
+
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "INSERT INTO developer_keys (id, user_id, name, scope, token, created, requests_count, requests_limit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (key_id, user_id, name, scope, token, created, requests_count, requests_limit)
+        )
+        conn.commit()
+        return {
+            "id": key_id,
+            "user_id": user_id,
+            "name": name,
+            "scope": scope,
+            "token": token,
+            "created": created,
+            "requests_count": requests_count,
+            "requests_limit": requests_limit
+        }
+    except Exception as e:
+        print(f"[ERROR] SQLite error in create_developer_key: {e}")
+        return None
+    finally:
+        conn.close()
+
+def get_developer_keys(user_id: str) -> list:
+    if supabase_client is not None:
+        try:
+            response = supabase_client.table("developer_keys").select("*").eq("user_id", user_id).execute()
+            return response.data or []
+        except Exception as e:
+            print(f"[ERROR] Supabase error in get_developer_keys: {e}")
+            return []
+
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM developer_keys WHERE user_id = ?", (user_id,))
+        rows = cursor.fetchall()
+        return [dict(r) for r in rows]
+    except Exception as e:
+        print(f"[ERROR] SQLite error in get_developer_keys: {e}")
+        return []
+    finally:
+        conn.close()
+
+def delete_developer_key(key_id: str) -> bool:
+    if supabase_client is not None:
+        try:
+            supabase_client.table("developer_keys").delete().eq("id", key_id).execute()
+            return True
+        except Exception as e:
+            print(f"[ERROR] Supabase error in delete_developer_key: {e}")
+            return False
+
+    conn = get_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM developer_keys WHERE id = ?", (key_id,))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"[ERROR] SQLite error in delete_developer_key: {e}")
+        return False
+    finally:
+        conn.close()

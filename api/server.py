@@ -89,6 +89,39 @@ def login_endpoint(request: LoginRequest):
         }
     }
 
+class CreateKeyRequest(BaseModel):
+    name: str
+    scope: str
+    user_id: str = "local_guest"
+
+@app.get("/api/keys")
+def list_keys_endpoint(user_id: str = "local_guest"):
+    from api.database import get_developer_keys
+    keys = get_developer_keys(user_id)
+    return keys
+
+@app.post("/api/keys")
+def create_key_endpoint(request: CreateKeyRequest):
+    from api.database import create_developer_key
+    key = create_developer_key(request.user_id, request.name, request.scope)
+    if not key:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create developer key"
+        )
+    return key
+
+@app.delete("/api/keys/{key_id}")
+def delete_key_endpoint(key_id: str):
+    from api.database import delete_developer_key
+    success = delete_developer_key(key_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete developer key"
+        )
+    return {"message": "Key deleted successfully"}
+
 @app.post("/api/generate", response_model=GenerateResponse)
 def generate_response(request: GenerateRequest):
     user_input = request.query
@@ -188,13 +221,55 @@ def external_generate_endpoint(request: ExternalGenerateRequest, authorization: 
         }
     }
 
+class ChatMessageModel(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessageModel]
+
+@app.post("/api/chat")
+def chat_endpoint(request: ChatRequest):
+    if not request.messages:
+        raise HTTPException(status_code=400, detail="Empty messages list")
+    
+    last_msg = request.messages[-1].content
+    
+    # Run local RAG retrieval
+    retrieved_docs = retrieve(last_msg)
+    context = "\n\n".join(retrieved_docs)
+    
+    # Correct prompt format
+    prompt = f"{context}\n\n<USER> {last_msg}\n<SYSTEM>"
+    
+    # Tokenize
+    input_ids = tokenizer.encode(prompt).ids
+    tokens = torch.tensor(input_ids, dtype=torch.long).unsqueeze(0).to(device)
+    
+    # Generate
+    output_tokens = generate(tokens)
+    
+    # Decode
+    response = tokenizer.decode(output_tokens)
+    
+    # Extract response
+    if "<USER>" in response:
+        response = response.split("<USER>")[0]
+    if "<SYSTEM>" in response:
+        response = response.split("<SYSTEM>")[0]
+        
+    return {
+        "role": "model",
+        "text": response.strip()
+    }
+
 def get_index_path():
     dist_index = os.path.join(BASE_DIR, "dist", "index.html")
     if os.path.exists(dist_index):
         return dist_index
     return os.path.join(BASE_DIR, "index.html")
 
-# HTML Page Routes (supporting client-side SPA routing for new premium dashboard)
+# HTML Page Routes (supporting client-side SPA routing for the React dashboard)
 @app.get("/")
 def read_hero():
     return FileResponse(get_index_path())
@@ -203,45 +278,26 @@ def read_hero():
 def read_chat():
     return FileResponse(get_index_path())
 
-@app.get("/capabilities")
-def read_capabilities():
-    return FileResponse(os.path.join(BASE_DIR, "pages", "capabilities.html"))
-
-@app.get("/memory")
-def read_memory():
+@app.get("/developer")
+def read_developer():
     return FileResponse(get_index_path())
 
-@app.get("/threshold")
-def read_threshold():
-    return FileResponse(os.path.join(BASE_DIR, "pages", "final_threshold.html"))
-
-@app.get("/register")
-def read_register():
+@app.get("/dashboard")
+def read_dashboard():
     return FileResponse(get_index_path())
 
 @app.get("/login")
 def read_login():
     return FileResponse(get_index_path())
 
-@app.get("/api-keys")
-def read_api_keys():
-    return FileResponse(get_index_path())
-
-@app.get("/developer")
-def read_developer():
-    return FileResponse(os.path.join(BASE_DIR, "pages", "developer.html"))
-
-@app.get("/ambient")
-def read_ambient():
-    return FileResponse(os.path.join(BASE_DIR, "pages", "ambient.html"))
-
-# Serve static files for local development (either compiled 'dist/' or base dir)
+# Serve static files (either compiled 'dist/' or base dir)
 from fastapi.staticfiles import StaticFiles
 dist_dir = os.path.join(BASE_DIR, "dist")
 if os.path.exists(dist_dir):
     app.mount("/", StaticFiles(directory=dist_dir, html=True), name="static")
 else:
     app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="static")
+
 
 if __name__ == "__main__":
     import uvicorn
