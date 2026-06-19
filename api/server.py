@@ -7,154 +7,29 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Header
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-# Add parent dir to path so we can import model
+# Add parent dir to path so we can import model and generate.py
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
-from model.gpt import GPT
-from model.config import GPTConfig
+import generate as generator
 
-# ------------------ DEVICE ------------------
-device = "cuda" if torch.cuda.is_available() else "cpu"
+# Unify aliases from unified generator module
+retrieve = generator.retrieve
+tokenizer = generator.tokenizer
+device = generator.device
 
-# ------------------ LOAD TOKENIZER ------------------
-tokenizer = ByteLevelBPETokenizer(
-    os.path.join(BASE_DIR, "tokenizer/vocab.json"),
-    os.path.join(BASE_DIR, "tokenizer/merges.txt")
-)
-
-vocab_size = tokenizer.get_vocab_size()
-
-# ------------------ CONFIG ------------------
-config = GPTConfig(
-    vocab_size=vocab_size,
-    block_size=256,
-    n_embd=256,   
-    n_layer=6,
-    n_head=4
-)
-# ------------------ LOAD MODEL ------------------
-model = GPT(config).to(device)
-model_path = os.path.join(BASE_DIR, "checkpoints/model.pt")
-
-if os.path.exists(model_path):
-    model.load_state_dict(torch.load(model_path, map_location=device, mmap=True))
-else:
-    print(f"Warning: Model not found at {model_path}. Using uninitialized weights.")
-model.eval()
-
-# ------------------ GENERATION SETTINGS ------------------
-temperature = 0.8
-top_k = 40
-max_new_tokens = 100
-block_size = config.block_size
-
-# ------------------ LOAD DOCUMENTS ------------------
-documents = []
-corpus_path = os.path.join(BASE_DIR, "data/raw/corpus.txt")
-doc_embeddings = []
-embedder = None
-
-try:
-    with open(corpus_path, "r", encoding="utf-8") as f:
-        content = f.read()
-        documents = [doc.strip() for doc in content.split("\n\n") if len(doc.strip()) > 0]
-    print(f"Loaded {len(documents)} documents for RAG.")
-    
-    if documents:
-        print("Loading RAG model...")
-        # Only instantiate the embedder if we actually have documents to embed!
-        embedder = SentenceTransformer("all-MiniLM-L6-v2")
-        doc_embeddings = embedder.encode(documents)
-except FileNotFoundError:
-    print(f"Warning: {corpus_path} not found. RAG will not have documents. Skipping embedder load to save memory.")
-
-
-# ------------------ RETRIEVE FUNCTION ------------------
-def retrieve(query, k=3):
-    if not documents or embedder is None:
-        return []
-    query_embedding = embedder.encode([query])
-    similarities = cosine_similarity(query_embedding, doc_embeddings)[0]
-
-    k = min(k, len(documents))
-    if k == 0:
-        return []
-
-    top_indices = np.argsort(similarities)[-k:][::-1]
-    return [documents[i] for i in top_indices]
-
-
-# ------------------ GENERATE FUNCTION ------------------
 def generate(tokens):
-    generated = []
-    for _ in range(max_new_tokens):
-
-        cond_tokens = tokens[:, -block_size:]
-
-        output = model(cond_tokens)
-        logits = output[0] if isinstance(output, tuple) else output
-
-        logits = logits[:, -1, :] / temperature
-
-        # Top-k filtering
-        if top_k is not None:
-            values, _ = torch.topk(logits, top_k)
-            logits[logits < values[:, [-1]]] = -float("Inf")
-
-        probs = F.softmax(logits, dim=-1)
-        next_token = torch.multinomial(probs, num_samples=1)
-
-        tokens = torch.cat((tokens, next_token), dim=1)
-        generated.append(next_token.item())
-
-    return generated
+    return generator.generate(tokens)
 
 # ------------------ DATABASE ------------------
 from api.database import init_db, create_user, verify_user
 
-# ------------------ FIREBASE ADMIN SUPPORT ------------------
-firebase_admin_available = False
-try:
-    import firebase_admin
-    from firebase_admin import auth as admin_auth, credentials
-    
-    # Initialize Firebase Admin if credentials file is specified in environment or default credentials exist
-    cred_path = os.environ.get("FIREBASE_CREDENTIALS")
-    if cred_path and os.path.exists(cred_path):
-        cred = credentials.Certificate(cred_path)
-        firebase_admin.initialize_app(cred)
-        firebase_admin_available = True
-        print("✅ Firebase Admin initialized with custom credentials")
-    else:
-        # Try initializing with default credentials
-        try:
-            firebase_admin.initialize_app()
-            firebase_admin_available = True
-            print("✅ Firebase Admin initialized with default credentials")
-        except Exception:
-            print("⚠️ Firebase Admin not initialized (missing credentials). Optional Firebase validation will fallback.")
-except ImportError:
-    print("ℹ️ firebase-admin library not installed. Skipping Firebase Admin setup.")
 
-def verify_firebase_token(id_token: str):
-    """
-    Optional helper to verify Firebase ID tokens on the backend.
-    Returns decoded token dictionary if successful, or None.
-    """
-    if not firebase_admin_available:
-        return None
-    try:
-        decoded_token = admin_auth.verify_id_token(id_token)
-        return decoded_token
-    except Exception as e:
-        print(f"Error verifying Firebase ID token: {e}")
-        return None
 
 # ------------------ FASTAPI APP ------------------
 app = FastAPI(title="ASTRA API")
@@ -214,6 +89,39 @@ def login_endpoint(request: LoginRequest):
         }
     }
 
+class CreateKeyRequest(BaseModel):
+    name: str
+    scope: str
+    user_id: str = "local_guest"
+
+@app.get("/api/keys")
+def list_keys_endpoint(user_id: str = "local_guest"):
+    from api.database import get_developer_keys
+    keys = get_developer_keys(user_id)
+    return keys
+
+@app.post("/api/keys")
+def create_key_endpoint(request: CreateKeyRequest):
+    from api.database import create_developer_key
+    key = create_developer_key(request.user_id, request.name, request.scope)
+    if not key:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create developer key"
+        )
+    return key
+
+@app.delete("/api/keys/{key_id}")
+def delete_key_endpoint(key_id: str):
+    from api.database import delete_developer_key
+    success = delete_developer_key(key_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete developer key"
+        )
+    return {"message": "Key deleted successfully"}
+
 @app.post("/api/generate", response_model=GenerateResponse)
 def generate_response(request: GenerateRequest):
     user_input = request.query
@@ -243,13 +151,157 @@ def generate_response(request: GenerateRequest):
 
     return GenerateResponse(response=response.strip())
 
-# Serve static files for local development
+class ExternalGenerateRequest(BaseModel):
+    prompt: str
+    temperature: float = 0.8
+    system_calibrator_sync: bool = True
+
+@app.post("/api/v1/context/generate")
+def external_generate_endpoint(request: ExternalGenerateRequest, authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or malformed Authorization header. Use 'Bearer <API_KEY>'."
+        )
+    
+    token = authorization.split(" ")[1]
+    
+    from api.database import validate_and_increment_key
+    validation = validate_and_increment_key(token)
+    
+    if not validation:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API Key credentials."
+        )
+    
+    if not validation["valid"]:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"API Quota limit exceeded: {validation['reason']}"
+        )
+        
+    user_input = request.prompt
+    
+    # RAG retrieval
+    retrieved_docs = retrieve(user_input)
+    context = "\n\n".join(retrieved_docs)
+
+    # Correct prompt format
+    prompt = f"{context}\n\n<USER> {user_input}\n<SYSTEM>"
+
+    # Tokenize
+    input_ids = tokenizer.encode(prompt).ids
+    tokens = torch.tensor(input_ids, dtype=torch.long).unsqueeze(0).to(device)
+
+    # Generate using request temperature
+    prev_temp = generator.temperature
+    generator.temperature = request.temperature
+    try:
+        output_tokens = generate(tokens)
+    finally:
+        generator.temperature = prev_temp
+
+    # Decode
+    response = tokenizer.decode(output_tokens)
+
+    # Extract response
+    if "<USER>" in response:
+        response = response.split("<USER>")[0]
+    if "<SYSTEM>" in response:
+        response = response.split("<SYSTEM>")[0]
+
+    return {
+        "generation": response.strip(),
+        "key_usage": {
+            "name": validation["key"]["name"],
+            "scope": validation["key"]["scope"],
+            "requests_count": validation["key"]["requests_count"],
+            "requests_limit": validation["key"]["requests_limit"]
+        }
+    }
+
+class ChatMessageModel(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessageModel]
+
+@app.post("/api/chat")
+def chat_endpoint(request: ChatRequest):
+    if not request.messages:
+        raise HTTPException(status_code=400, detail="Empty messages list")
+    
+    last_msg = request.messages[-1].content
+    
+    # Run local RAG retrieval
+    retrieved_docs = retrieve(last_msg)
+    context = "\n\n".join(retrieved_docs)
+    
+    # Correct prompt format
+    prompt = f"{context}\n\n<USER> {last_msg}\n<SYSTEM>"
+    
+    # Tokenize
+    input_ids = tokenizer.encode(prompt).ids
+    tokens = torch.tensor(input_ids, dtype=torch.long).unsqueeze(0).to(device)
+    
+    # Generate
+    output_tokens = generate(tokens)
+    
+    # Decode
+    response = tokenizer.decode(output_tokens)
+    
+    # Extract response
+    if "<USER>" in response:
+        response = response.split("<USER>")[0]
+    if "<SYSTEM>" in response:
+        response = response.split("<SYSTEM>")[0]
+        
+    return {
+        "role": "model",
+        "text": response.strip()
+    }
+
+def get_index_path():
+    dist_index = os.path.join(BASE_DIR, "dist", "index.html")
+    if os.path.exists(dist_index):
+        return dist_index
+    return os.path.join(BASE_DIR, "index.html")
+
+# HTML Page Routes (supporting client-side SPA routing for the React dashboard)
+@app.get("/")
+def read_hero():
+    return FileResponse(get_index_path())
+
+@app.get("/chat")
+def read_chat():
+    return FileResponse(get_index_path())
+
+@app.get("/developer")
+def read_developer():
+    return FileResponse(get_index_path())
+
+@app.get("/dashboard")
+def read_dashboard():
+    return FileResponse(get_index_path())
+
+@app.get("/login")
+def read_login():
+    return FileResponse(get_index_path())
+
+# Serve static files (either compiled 'dist/' or base dir)
 from fastapi.staticfiles import StaticFiles
-app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="static")
+dist_dir = os.path.join(BASE_DIR, "dist")
+if os.path.exists(dist_dir):
+    app.mount("/", StaticFiles(directory=dist_dir, html=True), name="static")
+else:
+    app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="static")
+
 
 if __name__ == "__main__":
     import uvicorn
-    # Bind to PORT if defined, otherwise default to 8000
-    port = int(os.environ.get("PORT", 8000))
+    # Bind to PORT if defined, otherwise default to 3000
+    port = int(os.environ.get("PORT", 3000))
     # We pass 'app' directly so it can run reliably both locally and in hosted environments
     uvicorn.run(app, host="0.0.0.0", port=port)
