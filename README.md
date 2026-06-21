@@ -1,8 +1,6 @@
 # ASTRA (Advanced Space Telemetry & Retrieval Agent)
 
-<div align="center">
-  <img width="1200" height="400" alt="ASTRA Banner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" style="border-radius: 12px; margin-bottom: 20px;" />
-</div>
+
 
 ASTRA is a complete, custom end-to-end artificial intelligence ecosystem designed for orbital command and mission telemetry centers. It combines a state-of-the-art causal **Decoder-Only Transformer (GPT)** trained from scratch on custom datasets with a **Retrieval-Augmented Generation (RAG)** context pipeline, a secure **Developer API Gateway** with quota-limiting logic, and a premium, responsive **React Single Page Application (SPA)** dashboard designed with high-fidelity telemetry metrics, real-time Earth trajectory visualizations, and vitals monitoring.
 
