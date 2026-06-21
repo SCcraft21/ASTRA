@@ -131,7 +131,7 @@ def generate_response(request: GenerateRequest):
     context = "\n\n".join(retrieved_docs)
 
     # Correct prompt format
-    prompt = f"{context}\n\n<USER> {user_input}\n<SYSTEM>"
+    prompt = f"{context}\n\n<USER> {user_input}\n<SYSTEM> "
 
     # Tokenize
     input_ids = tokenizer.encode(prompt).ids
@@ -188,7 +188,7 @@ def external_generate_endpoint(request: ExternalGenerateRequest, authorization: 
     context = "\n\n".join(retrieved_docs)
 
     # Correct prompt format
-    prompt = f"{context}\n\n<USER> {user_input}\n<SYSTEM>"
+    prompt = f"{context}\n\n<USER> {user_input}\n<SYSTEM> "
 
     # Tokenize
     input_ids = tokenizer.encode(prompt).ids
@@ -240,7 +240,7 @@ def chat_endpoint(request: ChatRequest):
     context = "\n\n".join(retrieved_docs)
     
     # Correct prompt format
-    prompt = f"{context}\n\n<USER> {last_msg}\n<SYSTEM>"
+    prompt = f"{context}\n\n<USER> {last_msg}\n<SYSTEM> "
     
     # Tokenize
     input_ids = tokenizer.encode(prompt).ids

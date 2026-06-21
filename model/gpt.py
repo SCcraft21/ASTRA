@@ -96,6 +96,25 @@ class GPT(nn.Module):
         # Output head
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size)
 
+        # Initialize weights
+        self.apply(self._init_weights)
+        
+        # Apply special scaled init to the residual projections
+        for pn, p in self.named_parameters():
+            if pn.endswith('proj.weight') or pn.endswith('net.2.weight'):
+                torch.nn.init.normal_(p, mean=0.0, std=0.02 / (2 * config.n_layer)**0.5)
+
+    def _init_weights(self, module):
+        if isinstance(module, nn.Linear):
+            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+            if module.bias is not None:
+                torch.nn.init.zeros_(module.bias)
+        elif isinstance(module, nn.Embedding):
+            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+        elif isinstance(module, nn.LayerNorm):
+            torch.nn.init.zeros_(module.bias)
+            torch.nn.init.ones_(module.weight)
+
     def forward(self, idx):
         B, T = idx.size()
 

@@ -15,15 +15,16 @@ tokenizer = ByteLevelBPETokenizer(
     "tokenizer/vocab.json",
     "tokenizer/merges.txt"
 )
+tokenizer.add_special_tokens(["<s>", "</s>", "<pad>", "<unk>", "<USER>", "<ASSISTANT>", "<SYSTEM>"])
 
 vocab_size = tokenizer.get_vocab_size()
 
 # ------------------ CONFIG ------------------
 config = GPTConfig(
     vocab_size=vocab_size,
-    block_size=256,
-    n_embd=256,   
-    n_layer=6,
+    block_size=128,
+    n_embd=128,   
+    n_layer=2,
     n_head=4
 )
 # ------------------ LOAD MODEL ------------------
@@ -76,6 +77,12 @@ def retrieve(query, k=3):
 
 # ------------------ GENERATE FUNCTION ------------------
 def generate(tokens):
+    eos_id = tokenizer.token_to_id("</s>")
+    user_id = tokenizer.token_to_id("<USER>")
+    system_id = tokenizer.token_to_id("<SYSTEM>")
+    pad_id = tokenizer.token_to_id("<pad>")
+    stop_ids = {eos_id, user_id, system_id, pad_id} - {None}
+
     generated = []
     for _ in range(max_new_tokens):
 
@@ -84,18 +91,27 @@ def generate(tokens):
         output = model(cond_tokens)
         logits = output[0] if isinstance(output, tuple) else output
 
-        logits = logits[:, -1, :] / temperature
+        logits = logits[:, -1, :]
 
-        # Top-k filtering
-        if top_k is not None:
-            values, _ = torch.topk(logits, top_k)
-            logits[logits < values[:, [-1]]] = -float("Inf")
+        # Temperature safety
+        if temperature < 1e-5:
+            next_token = torch.argmax(logits, dim=-1, keepdim=True)
+        else:
+            logits = logits / temperature
+            # Top-k filtering
+            if top_k is not None:
+                values, _ = torch.topk(logits, top_k)
+                logits[logits < values[:, [-1]]] = -float("Inf")
 
-        probs = F.softmax(logits, dim=-1)
-        next_token = torch.multinomial(probs, num_samples=1)
+            probs = F.softmax(logits, dim=-1)
+            next_token = torch.multinomial(probs, num_samples=1)
+
+        token_val = next_token.item()
+        if token_val in stop_ids:
+            break
 
         tokens = torch.cat((tokens, next_token), dim=1)
-        generated.append(next_token.item())
+        generated.append(token_val)
 
     return generated
 
@@ -113,11 +129,8 @@ if __name__ == "__main__":
         retrieved_docs = retrieve(user_input)
         context = "\n\n".join(retrieved_docs)
 
-        #Correct prompt format
-        prompt = f"""{context}
-
-<USER> {user_input}
-<SYSTEM>"""
+        #Correct prompt format (added space after <SYSTEM>)
+        prompt = f"{context}\n\n<USER> {user_input}\n<SYSTEM> "
 
         # Tokenize
         input_ids = tokenizer.encode(prompt).ids

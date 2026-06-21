@@ -1,4 +1,11 @@
 import torch
+import os
+# Set PyTorch threads to use all CPU cores
+if not torch.cuda.is_available():
+    cores = os.cpu_count() or 4
+    torch.set_num_threads(cores)
+    print(f"Setting PyTorch threads to: {cores}")
+
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
@@ -15,45 +22,51 @@ tokenizer = ByteLevelBPETokenizer(
     "tokenizer/vocab.json",
     "tokenizer/merges.txt"
 )
+tokenizer.add_special_tokens(["<s>", "</s>", "<pad>", "<unk>", "<USER>", "<ASSISTANT>", "<SYSTEM>"])
 
 vocab_size = tokenizer.get_vocab_size()
 
 # ------------------ CONFIG ------------------
 config = GPTConfig(
     vocab_size=vocab_size,
-    block_size=256,
-    n_embd=256,
-    n_layer=6,
+    block_size=128,
+    n_embd=128,
+    n_layer=2,
     n_head=4
 )
+config.epochs = 1
+config.batch_size = 32
+config.learning_rate = 1e-3
 
 # ------------------ LOAD TOKENIZED DATA ------------------
 data = np.load("data/tokenized.npy")
 
-#LIMIT DATA SIZE 
-MAX_TOKENS = 200000
+#LIMIT DATA SIZE (Use full dataset)
+MAX_TOKENS = 2000000
 if len(data) > MAX_TOKENS:
     data = data[:MAX_TOKENS]
 data = torch.tensor(data, dtype=torch.long)
 
 # ------------------ DATASET CLASS (FAST & MEMORY SAFE) ------------------
 class TextDataset(torch.utils.data.Dataset):
-    def __init__(self, data, block_size):
+    def __init__(self, data, block_size, stride=192):
         self.data = data
         self.block_size = block_size
+        self.stride = stride
 
     def __len__(self):
-        return len(self.data) - self.block_size
+        return (len(self.data) - self.block_size - 1) // self.stride + 1
 
     def __getitem__(self, idx):
-        x = self.data[idx:idx + self.block_size]
-        y = self.data[idx + 1:idx + self.block_size + 1]
+        start_idx = idx * self.stride
+        x = self.data[start_idx:start_idx + self.block_size]
+        y = self.data[start_idx + 1:start_idx + self.block_size + 1]
         return x, y
 
 
 print("Preparing dataset...")
 
-dataset = TextDataset(data, config.block_size)
+dataset = TextDataset(data, config.block_size, stride=192)
 
 print("Dataset size:", len(dataset))
 
@@ -75,7 +88,12 @@ criterion = nn.CrossEntropyLoss()
 
 # ------------------ TRAINING ------------------
 epochs = config.epochs
-scaler = torch.amp.GradScaler('cuda')
+use_cuda = device == "cuda"
+
+if use_cuda:
+    scaler = torch.amp.GradScaler('cuda')
+else:
+    scaler = None
 
 print("Starting training...")
 
@@ -89,8 +107,28 @@ for epoch in range(epochs):
 
         optimizer.zero_grad()
 
-        # Forward pass with Mixed Precision
-        with torch.amp.autocast('cuda'):
+        if use_cuda:
+            # Forward pass with Mixed Precision
+            with torch.amp.autocast('cuda'):
+                output = model(x)
+                logits = output[0] if isinstance(output, tuple) else output
+
+                # Reshape for loss
+                logits = logits.view(-1, config.vocab_size)
+                y = y.view(-1)
+
+                loss = criterion(logits, y)
+
+            # Backprop with scaler
+            scaler.scale(loss).backward()
+
+            # Gradient clipping (IMPORTANT)
+            scaler.unscale_(optimizer)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+
+            scaler.step(optimizer)
+            scaler.update()
+        else:
             output = model(x)
             logits = output[0] if isinstance(output, tuple) else output
 
@@ -100,15 +138,12 @@ for epoch in range(epochs):
 
             loss = criterion(logits, y)
 
-        # Backprop with scaler
-        scaler.scale(loss).backward()
+            loss.backward()
 
-        # Gradient clipping (IMPORTANT)
-        scaler.unscale_(optimizer)
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            # Gradient clipping (IMPORTANT)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
 
-        scaler.step(optimizer)
-        scaler.update()
+            optimizer.step()
 
         total_loss += loss.item()
 
@@ -121,4 +156,4 @@ for epoch in range(epochs):
 # ------------------ SAVE MODEL ------------------
 torch.save(model.state_dict(), "checkpoints/model.pt")
 
-print("💾 Model saved to checkpoints/model.pt")
+print("Model saved to checkpoints/model.pt")
