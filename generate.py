@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 from tokenizers import ByteLevelBPETokenizer
-from model.gpt import GPT
+from model.harvard import HarvardGPT
 from model.config import GPTConfig
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -28,8 +28,8 @@ config = GPTConfig(
     n_head=4
 )
 # ------------------ LOAD MODEL ------------------
-model = GPT(config).to(device)
-model.load_state_dict(torch.load("checkpoints/model.pt", map_location=device))
+model = HarvardGPT(config).to(device)
+model.load_state_dict(torch.load("checkpoints/harvard_model.pt", map_location=device))
 model.eval()
 
 # ------------------ GENERATION SETTINGS ------------------

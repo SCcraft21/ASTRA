@@ -1,197 +1,152 @@
 # ASTRA (Advanced Space Telemetry & Retrieval Agent)
 
-ASTRA is a complete, custom end-to-end artificial intelligence ecosystem designed for orbital command and mission telemetry centers. It combines a state-of-the-art causal **Decoder-Only Transformer (GPT)** trained from scratch on custom datasets with a **Retrieval-Augmented Generation (RAG)** context pipeline, a secure **Developer API Gateway** with quota-limiting logic, and a premium, responsive **React Single Page Application (SPA)** dashboard designed with high-fidelity telemetry metrics, real-time Earth trajectory visualizations, and vitals monitoring.
+ASTRA is a custom end-to-end artificial intelligence engine designed for orbital command and mission telemetry processing. At its core is a state-of-the-art **Harvard Dual-Memory Transformer** trained from scratch in PyTorch, integrated with a **Retrieval-Augmented Generation (RAG)** pipeline and a custom Byte-Level Byte Pair Encoding (BPE) Tokenizer.
+
+The neural architecture is inspired by the Harvard CPU design — it maintains separate instruction and data processing paths that converge via cross-attention gating before autoregressive generation.
 
 ---
 
-## 🌌 System Architecture
+## 🌌 Core ML Architecture
 
-The ASTRA architecture is composed of three primary pillars operating in synchrony:
+ASTRA's model is a custom **Harvard Dual-Memory Transformer** constructed in PyTorch. Unlike standard decoder-only models, it separates general instruction patterns from transient prompt context:
 
 ```mermaid
 graph TD
-    subgraph Frontend [React SPA Dashboard & Console]
-        UI[Mission Telemetry UI]
-        DevConsole[Developer Console]
-        AuthUI[User Login / Registration]
+    subgraph Input ["Input Layer"]
+        TokenEmbed["Token Embedding"]
+        PosEmbed["Position Embedding"]
     end
 
-    subgraph Backend [FastAPI Gateway & Database Routing]
-        Server[FastAPI Server]
-        Auth[SHA-256 Auth Handler]
-        Quota[API Quota Controller]
-        DBRouter[Database Router]
-        SQLite[(Local SQLite Database)]
-        Supabase[(Supabase Backend Cloud)]
+    subgraph InstructionMemory ["Instruction Memory Bank (Program Path)"]
+        IM_Learned["Learned Instruction Embeddings<br/>(nn.Parameter bank)"]
+        IM_Attn["Instruction Self-Attention<br/>(Multi-Head)"]
+        IM_FFN["Instruction FFN"]
+        IM_LN["LayerNorm"]
     end
 
-    subgraph CoreML [Custom ML Engine & RAG Pipeline]
-        GPTModel[Custom GPT Model PyTorch]
-        RAGEngine[Cosine Similarity / FAISS Embedder]
-        Corpus[(RAG Corpus & cached embeddings)]
-        Tokenizer[BPE Custom Tokenizer]
+    subgraph DataMemory ["Data Memory Bank (Data Path)"]
+        DM_Input["Data Input Projection"]
+        DM_Attn["Data Self-Attention<br/>(Causal Multi-Head)"]
+        DM_FFN["Data FFN"]
+        DM_LN["LayerNorm"]
     end
 
-    %% Flow connections
-    UI -->|API Requests| Server
-    DevConsole -->|Manage Keys & Upload Shards| Server
-    AuthUI -->|Auth Requests| Server
-    
-    Server -->|Read/Write API Keys & Users| DBRouter
-    DBRouter -->|Fallback Offline| SQLite
-    DBRouter -->|Production Online| Supabase
+    subgraph Merge ["Harvard Merge Layer"]
+        CrossAttn["Cross-Attention Gate<br/>(Data queries Instruction)"]
+        Gate["Learnable Gating α"]
+        Fuse["Fused Output = α·instruction + (1-α)·data"]
+    end
 
-    Server -->|Verify Bearer Tokens| Quota
-    Server -->|Retrieve Context| RAGEngine
-    Corpus -->|Precomputed embeddings| RAGEngine
-    RAGEngine -->|Injected Context| Server
-    
-    Server -->|Tokenize Prompt| Tokenizer
-    Tokenizer -->|Encids| GPTModel
-    GPTModel -->|Decoder Output| Tokenizer
-    Tokenizer -->|Decoded Response| Server
-    Server -->|Server Response| UI
+    subgraph Decoder ["Autoregressive Decoder Stack"]
+        DecBlock["Standard Transformer Blocks<br/>(Causal Self-Attention + FFN)"]
+    end
+
+    subgraph Output ["Output Head"]
+        LNF["Final LayerNorm"]
+        LMHead["Linear → vocab_size"]
+    end
+
+    TokenEmbed --> DM_Input
+    PosEmbed --> DM_Input
+
+    IM_Learned --> IM_Attn --> IM_FFN --> IM_LN
+    DM_Input --> DM_Attn --> DM_FFN --> DM_LN
+
+    IM_LN --> CrossAttn
+    DM_LN --> CrossAttn
+    CrossAttn --> Gate --> Fuse
+
+    Fuse --> DecBlock --> LNF --> LMHead
 ```
+
+### Subsystem Details
+
+1. **Instruction Memory Bank**: A learned parameter bank (`nn.Parameter`) of shape `(n_inst, n_embd)` representing instructions, syntax rules, and task prompts. It processes these embeddings through a multi-head self-attention layer to create a structured "program ROM."
+2. **Data Memory Path**: Projects input tokens and positional embeddings through causal self-attention, functioning as the transient context/data bus.
+3. **Harvard Merge Layer**: Merges the two paths using cross-attention where the data path queries the instruction bank. A learnable gating scalar $\alpha$ blends the representations: $\text{output} = \alpha \cdot \text{instruction} + (1 - \alpha) \cdot \text{data}$.
+4. **Decoder Stack**: Autoregressive transformer blocks with Pre-LN residual connections.
+5. **RAG Pipeline**: Leverages `SentenceTransformer("all-MiniLM-L6-v2")` to retrieve the top $k$ relevant context blocks from a local corpus (`data/raw/corpus.txt`), pre-generating and caching embeddings in `data/raw/corpus_embeddings.npy` to load instantly.
 
 ---
 
-## 📂 Directory Map & File Registry
+## 📂 Repository Structure
 
-The repository is organized into modular subsystems. Below is a detailed description of each component:
+The clean, modular ML repository is organized as follows:
 
 ```
 ASTRA/
-├── api/                    # Backend API Gateway & Database Interface
-│   ├── database.py         # Dual-engine SQLite & Supabase handler with SHA-256 hashing
-│   └── server.py           # FastAPI application serving SPA routes & Developer endpoints
-├── model/                  # Deep Learning Neural Network Core (Decoder-Only GPT)
+├── model/                  # Deep Learning Neural Network Core
 │   ├── attention.py        # Multi-Head Causal Self-Attention Layer
 │   ├── config.py           # Model Hyperparameter Configuration class
-│   ├── gpt.py              # Core PyTorch GPT network & Transformer blocks
+│   ├── gpt.py              # Legacy Decoder-Only GPT network (reference)
+│   ├── harvard.py          # Harvard Dual-Memory Architecture
 │   └── transformer_block.py# Standard Transformer layers with residual LayerNorms
 ├── training/               # ML Model Training & Tokenization pipelines
 │   ├── dataset.py          # PyTorch dataset loader with stride configurations
-│   └── tokenize_data.py    # Raw corpus tokenization script using trained BPE weights
+│   └── tokenize_data.py    # Raw corpus tokenization script
 ├── tokenizer/              # Custom Byte-Level BPE Tokenizer
 │   ├── merges.txt          # Trained subword merges representation
-│   ├── train_tokenizer.py  # Script for training BPE tokenizers from raw CSV datasets
-│   └── vocab.json          # Vocabulary lookup mapping subwords to unique indices
-├── data/                   # Structured Datasets, Databases, and Builders
-│   ├── dataset_sources/    # Modular data source scrapers (Alpaca, Kaggle Wikipedia, SQuAD, CSV)
+│   ├── train_tokenizer.py  # Script for training BPE tokenizers
+│   └── vocab.json          # Vocabulary lookup mapping
+├── data/                   # Structured Datasets and builders
+│   ├── dataset_sources/    # Modular data source scrapers
 │   ├── build_dataset.py    # Main pipeline runner calling registered datasets
-│   ├── dataset_adapter.py  # Unified formatting converters (Plain text / Conversation tags)
-│   ├── merge_datasets.py   # Multi-source dataset compiler generating raw corpus text
-│   ├── registry.py         # Global dataset source registry decorator
-│   ├── tokenized.npy       # Pre-tokenized corpus token array saved as binary numpy format
-│   └── users.db            # SQLite local user & developer keys database
-├── tools/                  # Utility scripts and supplementary services
+│   ├── dataset_adapter.py  # Unified formatting converters
+│   ├── merge_datasets.py   # Multi-source dataset compiler
+│   ├── registry.py         # Global dataset source registry
+│   ├── tokenized.npy       # Pre-tokenized corpus token array (binary numpy format)
+│   └── raw/                # Raw text source files (corpus.txt)
+├── tools/                  # Utility scripts
 │   └── rag.py              # FAISS-based high-performance Vector Indexing utility
-├── src/                    # Frontend React Single Page Application (Vite + TSX)
-│   ├── components/         # Dashboard views, developer panels, sidebars, and authentication
-│   ├── App.tsx             # Central route switcher & session coordinator
-│   ├── index.css           # Premium styling tokens & global TailwindCSS directives
-│   ├── main.tsx            # React application entrypoint mounting the DOM
-│   └── types.ts            # TypeScript interfaces representing system types
 ├── checkpoints/            # Directory saving trained PyTorch weights (.pt)
 ├── configs/                # Shared model configurations
-├── security_spec.md        # Comprehensive security specification and exploit scenario testing
-├── supabase_schema.sql     # SQL migration script for Supabase DB setup
-├── requirements.txt        # Python backend dependencies list
-├── package.json            # Frontend dependency specifications and dev scripts
-└── tsconfig.json           # TypeScript configuration guidelines
+├── requirements.txt        # Python ML dependencies list
+└── README.md               # System documentation
 ```
 
 ---
 
-## 🛠️ Subsystem Details
-
-### 1. Neural Network Core & Generation (`model/` & `generate.py`)
-The AI core is a custom **Decoder-Only GPT model** constructed in PyTorch:
-*   **Layer Norms & Residual Path**: Follows modern Pre-LN transformer structure.
-*   **Causal Masking**: Enforces strict autoregressive prediction by masking future tokens in multi-head attention.
-*   **Mixed Precision & Scaled Init**: Supports mixed-precision training (`torch.amp.autocast`) with gradient scaling and clip thresholds.
-*   **Prompt Formatting**: Prompts are formatted under `<USER>` and `<SYSTEM>` tag wrappers to enable conversational tuning.
-*   **RAG Engine**: Prior to feeding tokens into the GPT model, the user query is embedded via `SentenceTransformer("all-MiniLM-L6-v2")`. It retrieves the top $k$ relevant context blocks from `data/raw/corpus.txt` based on cosine similarity, pre-generating local embeddings into `data/raw/corpus_embeddings.npy` to load instantly.
-
-### 2. Backend API Gateway & Database (`api/`)
-A high-throughput API gateway written using FastAPI:
-*   **Dynamic Auth**: Features registration and login with SHA-256 salted password verification.
-*   **Hybrid Database Routing**: Tries to connect to a cloud-based **Supabase** instance. If environment variables are missing, it falls back seamlessly to a local **SQLite** database (`data/users.db`).
-*   **Developer API Key Controller**: Developers can register designated keys via the UI dashboard. The API server supports a secure Bearer token endpoint (`/api/v1/context/generate`) that validates tokens, increments request statistics, enforces rate quotas, and supports custom temperatures.
-
-### 3. Frontend Telemetry Dashboard & Developer Console (`src/`)
-A premium design theme with dark modes, glowing micro-animations, and glassmorphism elements:
-*   **Mission Telemetry Dashboard**: Displays rotating real-time 3D Earth tracking calculations (altitude, velocity) and crew vitals telemetry (heart rate, $O_2$ levels) with custom micro-animations. Contains a fully interactive workspace chat interface.
-*   **Hyper-Jump Simulation**: Simulates FTL sequence adjustments, updating telemetry values (velocity scaling to the speed of light) and logging alerts dynamically.
-*   **Developer Console**: Allows developers to generate API keys, copy authentication tokens with clipboard feedback, monitor telemetry stats (API requests & memory core usage gauges), and drop custom JSON/CSV/TXT memory shards into the workspace using drag-and-drop file upload progress bars.
-
----
-
-## 🚀 Installation & Local Launch
+## 🛠️ Installation & Local Launch
 
 ### Prerequisites
-*   **Node.js** (v18 or higher)
-*   **Python** (3.10 or higher with PyTorch environment)
+- **Python 3.10+** (with PyTorch support)
+- NVIDIA GPU (Optional, CUDA supported)
 
-### 1. Backend Setup & Dependency Installation
-Create a Python virtual environment and install the required machine learning and server packages:
+### 1. Install Dependencies
+Set up your virtual environment and install the required machine learning dependencies:
 ```bash
 # Create and activate virtual environment
 python -m venv .venv
 .venv\Scripts\activate  # On Windows
+# source .venv/bin/activate  # On Linux/macOS
 
-# Install Python packages
+# Install packages
 pip install -r requirements.txt
 ```
 
-### 2. Environment Configurations
-Configure database keys and variables. Duplicate the `.env.example` file to create a `.env.local` configuration:
+### 2. Prepare Data & Precompute Embeddings
+Generate the consolidated corpus and compile BPE weights:
 ```bash
-copy .env.example .env.local
-```
-Add your **Gemini API key** and optional **Supabase URL & Key** to connect to cloud hosting:
-```env
-GEMINI_API_KEY="your-gemini-api-key"
-VITE_SUPABASE_URL="https://your-supabase-project.supabase.co"
-VITE_SUPABASE_ANON_KEY="your-supabase-anon-key"
-```
-
-### 3. Training & Precomputing Tokenizers (Optional)
-If you wish to retrain or generate tokenizer mappings and tokenized arrays:
-```bash
-# Process raw text source documents and merge databases
+# 1. Process raw data sources and compile into corpus.txt
 python data/merge_datasets.py
 
-# Train custom BPE Tokenizer weights
+# 2. Train custom Byte-Level BPE Tokenizer
 python tokenizer/train_tokenizer.py
 
-# Tokenize data
+# 3. Pre-tokenize the compiled text corpus
 python training/tokenize_data.py
+```
 
-# Run a sample epoch of GPT training
+### 3. Model Training
+Run the training loop to train the Harvard Dual-Memory Transformer:
+```bash
 python train.py
 ```
+This saves per-epoch checkpoints (`checkpoints/harvard_model_epoch{N}.pt`) and the final model weight weights to `checkpoints/harvard_model.pt`.
 
-### 4. Running the Complete System
-Launch the development servers:
-
-#### Start the React Frontend Developer Server:
+### 4. Interactive Generation (CLI)
+Interact with the trained Harvard model with built-in retrieval-augmented generation (RAG):
 ```bash
-npm install
-npm run dev
+python generate.py
 ```
-
-#### Start the FastAPI Server:
-```bash
-python api/server.py
-```
-By default, the server binds to `http://localhost:3000`. The frontend will automatically map endpoints to the backend port.
-
----
-
-## 🔒 Security Specifications
-
-The system implements strict database constraints detailed in `security_spec.md`:
-1.  **User Isolation**: Cross-tenant data leaks are prevented via strict row-level filters. Users can only query documents or metrics belonging to their authenticated session identifier.
-2.  **Quota Poisoning Guards**: Restricts developer key creation, updating, or request increases to prevent denial of wallet/storage exhaust attacks. Length properties on uploaded document IDs are constrained to alphanumerics (`^[a-zA-Z0-9_\-]+$`) with defined payload limits.
-3.  **Exploit Scenario Verification**: Covers verification of 12 distinct exploit payloads (including unauthorized cross-tenant writes, shadow-field modifications, schema expansion bypasses, and numeric score injections).
+On first run, this script precomputes and caches RAG embeddings to `data/raw/corpus_embeddings.npy` for subsequent zero-latency loading.

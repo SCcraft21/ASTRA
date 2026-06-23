@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 # pyrefly: ignore [missing-import]
 from tokenizers import ByteLevelBPETokenizer
-from model.gpt import GPT
+from model.harvard import HarvardGPT
 from model.config import GPTConfig
 
 # ------------------ DEVICE ------------------
@@ -34,7 +34,7 @@ config = GPTConfig(
     n_layer=2,
     n_head=4
 )
-config.epochs = 1
+config.epochs = 10
 config.batch_size = 32
 config.learning_rate = 1e-3
 
@@ -78,7 +78,7 @@ dataloader = DataLoader(
 )
 
 # ------------------ MODEL ------------------
-model = GPT(config).to(device)
+model = HarvardGPT(config).to(device)
 
 # ------------------ OPTIMIZER ------------------
 optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
@@ -153,7 +153,12 @@ for epoch in range(epochs):
     avg_loss = total_loss / len(dataloader)
     print(f"\n Epoch {epoch+1} completed. Avg Loss: {avg_loss:.4f}\n")
 
-# ------------------ SAVE MODEL ------------------
-torch.save(model.state_dict(), "checkpoints/model.pt")
+    # Save checkpoint at every epoch completion
+    epoch_path = f"checkpoints/harvard_model_epoch{epoch+1}.pt"
+    torch.save(model.state_dict(), epoch_path)
+    print(f"Checkpoint saved: {epoch_path}")
 
-print("Model saved to checkpoints/model.pt")
+# ------------------ SAVE FINAL MODEL ------------------
+torch.save(model.state_dict(), "checkpoints/harvard_model.pt")
+
+print("Final model saved to checkpoints/harvard_model.pt")
